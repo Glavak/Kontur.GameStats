@@ -1,17 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LiteDB;
 
 namespace Kontur.GameStats.Server
 {
     public class GetServersMatches : RequestHandler<MatchParameters>
     {
-        public override object Process(MatchParameters parameters, object data, IStatsRepository sqLiteConnection)
+        public override object Process(MatchParameters parameters, object data, LiteDatabase database)
         {
-            return parameters.Timestamp;
+            var table = database.GetCollection<Model.Match>("matches");
+
+            Model.MatchResults result = table
+                .FindOne(x => x.Endpoint == parameters.Endpoint && x.Timestamp == parameters.Timestamp)
+                .Results;
+
+            if (result == null)
+            {
+                throw new PageNotFoundException("Match with given endpoint at given timestamp does not exist");
+            }
+
+            return result;
         }
     }
 }

@@ -1,31 +1,22 @@
 ﻿using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Text.RegularExpressions;
+using LiteDB;
 
 namespace Kontur.GameStats.Server
 {
     public class Router
     {
         private readonly List<RouterBinding> bindings;
-        private readonly IStatsRepository sqLiteConnection;
+        private readonly LiteDatabase database;
 
-        public Router(IStatsRepository sqLiteConnection)
+        public Router(LiteDatabase database)
         {
-            this.sqLiteConnection = sqLiteConnection;
+            this.database = database;
 
             bindings = new List<RouterBinding>();
-
-            const string endpointRegexp = @"(([a-zA-Z]+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})-(\d+))";
-            const string timestampRegexp = @"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)";
-            const string countRegexp = @"(\d+)";
-
-            Bind("^/servers/" + endpointRegexp + "/info/?$", "PUT", new AdvertiseServerInfo());
-            Bind("^/servers/" + endpointRegexp + "/info/?$", "GET", new GetServerInfo());
-            Bind("^/servers/info/?$", "GET", new GetServersInfo());
-            Bind("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "GET", new GetServersMatches());
         }
 
-        private void Bind(string addressRegex, string httpMethod, IRequestHandler handler)
+        public void Bind(string addressRegex, string httpMethod, IRequestHandler handler)
         {
             bindings.Add(new RouterBinding(addressRegex, httpMethod, handler));
         }
@@ -45,7 +36,7 @@ namespace Kontur.GameStats.Server
                 {
                     parameters[i - 1] = match.Groups[i].Value;
                 }
-                return bind.RequestHandler.Handle(parameters, data, sqLiteConnection);
+                return bind.RequestHandler.Handle(parameters, data, database);
             }
 
             throw new PageNotFoundException("");

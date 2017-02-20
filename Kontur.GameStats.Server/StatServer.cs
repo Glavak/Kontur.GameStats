@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Data.SQLite;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using LiteDB;
 using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server
@@ -12,7 +12,7 @@ namespace Kontur.GameStats.Server
     {
         private readonly HttpListener listener;
         private readonly Router router;
-        private readonly IStatsRepository statsRepository;
+        private readonly LiteDatabase database;
 
         private Thread listenerThread;
         private bool disposed;
@@ -22,13 +22,20 @@ namespace Kontur.GameStats.Server
         {
             listener = new HttpListener();
 
-            StatsDbContext context = new StatsDbContext();
-            statsRepository = new DatabaseStatsRepository(context);
+            database = new LiteDatabase("MyDataBase.db");
 
-            /*sqLiteConnection = new SQLiteConnection("Data Source=MyDatabase.sqlite;Version=3;");
-            sqLiteConnection.Open();*/
+            router = new Router(database);
 
-            router = new Router(statsRepository);
+            const string endpointRegexp = @"(([a-zA-Z]+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})-(\d+))";
+            const string timestampRegexp = @"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)";
+            const string countRegexp = @"(\d+)";
+
+            router.Bind("^/servers/" + endpointRegexp + "/info/?$", "PUT", new AdvertiseServerInfo());
+            router.Bind("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "PUT", new AdvertiseMatchResult());
+
+            router.Bind("^/servers/" + endpointRegexp + "/info/?$", "GET", new GetServerInfo());
+            router.Bind("^/servers/info/?$", "GET", new GetServersInfo());
+            router.Bind("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "GET", new GetServersMatches());
         }
 
         public void Start(string prefix)
@@ -78,6 +85,8 @@ namespace Kontur.GameStats.Server
             Stop();
 
             listener.Close();
+
+            database.Dispose();
         }
 
         private void Listen()
@@ -107,6 +116,13 @@ namespace Kontur.GameStats.Server
         private async Task HandleContextAsync(HttpListenerContext listenerContext)
         {
             string resultText = "";
+
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = NamesContractResolver.Instance,
+                DateFormatString = "s\\Z"
+            };
+
             try
             {
                 string requestBody;
@@ -114,13 +130,16 @@ namespace Kontur.GameStats.Server
                 {
                     requestBody = reader.ReadToEnd();
                 }
+
+                object requestData = JsonConvert.DeserializeObject(requestBody, serializerSettings);
+
                 object result = router.RouteRequest(
                     listenerContext.Request.RawUrl,
-                    JsonConvert.DeserializeObject(requestBody),
+                    requestData,
                     listenerContext.Request.HttpMethod);
 
                 listenerContext.Response.StatusCode = (int)HttpStatusCode.OK;
-                resultText = JsonConvert.SerializeObject(result);
+                resultText = JsonConvert.SerializeObject(result, serializerSettings);
             }
             catch (BadRequestException e)
             {
