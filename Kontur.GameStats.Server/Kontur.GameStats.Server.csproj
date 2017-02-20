@@ -71,6 +71,7 @@
     <Compile Include="Pages\Parameters\CountParameters.cs" />
     <Compile Include="Pages\Parameters\MatchParameters.cs" />
     <Compile Include="Pages\Parameters\ServerParameters.cs" />
+    <Compile Include="Pages\ReportRecentMatches.cs" />
     <Compile Include="Parameters\IParameters.cs" />
     <Compile Include="Parameters\IParametersExtension.cs" />
     <Compile Include="Parameters\ParameterAttribute.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Pages\GetServersInfo.cs" />
     <Compile Include="Routing\Router.cs" />
     <Compile Include="Routing\RouterBinding.cs" />
+    <Compile Include="Routing\RoutingRules.cs" />
     <Compile Include="StatServer.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

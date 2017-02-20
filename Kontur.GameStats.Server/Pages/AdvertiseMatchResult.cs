@@ -27,6 +27,9 @@ namespace Kontur.GameStats.Server
                 Timestamp = parameters.Timestamp
             };
 
+            // Create not unique index on timestamp field
+            matchesTable.EnsureIndex("Timestamp", false);
+
             matchesTable.Insert(match);
 
             return new object();
