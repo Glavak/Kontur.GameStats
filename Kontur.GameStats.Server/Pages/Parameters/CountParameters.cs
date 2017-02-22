@@ -2,7 +2,9 @@
 {
     public class CountParameters : IParameters
     {
-        [ParameterInteger(MinValue = 0, MaxValue = 50, Required = false, DefaultValue = 5)]
+        public const int MaximumCountValue = 50;
+
+        [ParameterInteger(MinValue = 0, MaxValue = MaximumCountValue, Required = false, DefaultValue = 5)]
         public int Count { get; set; }
     }
 }

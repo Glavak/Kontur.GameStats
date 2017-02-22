@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using Fclp.Internals.Extensions;
-using Kontur.GameStats.Server.Model;
+﻿using Kontur.GameStats.Server.Model;
 using LiteDB;
-using Newtonsoft.Json.Linq;
 
 namespace Kontur.GameStats.Server
 {
@@ -27,12 +23,45 @@ namespace Kontur.GameStats.Server
                 Timestamp = parameters.Timestamp
             };
 
+            foreach (PlayerScore playerScore in match.Results.Scoreboard)
+            {
+                UpdatePlayerStatistics(playerScore, database);
+            }
+
             // Create not unique index on timestamp field
             matchesTable.EnsureIndex("Timestamp", false);
 
             matchesTable.Insert(match);
 
             return new object();
+        }
+
+        private static void UpdatePlayerStatistics(PlayerScore playerScore, LiteDatabase database)
+        {
+            var table = database.GetCollection<Model.PlayerStatistics>("playerStatistics");
+
+            PlayerStatistics statistics = table.FindOne(x => x.Name == playerScore.Name);
+
+            if (statistics == null)
+            {
+                statistics = new PlayerStatistics() { Name = playerScore.Name };
+            }
+
+            statistics.Matches++;
+            statistics.Kills += playerScore.Kills;
+            statistics.Deaths += playerScore.Deaths;
+
+            if (statistics.Matches >= 10 && statistics.Kills > 0)
+            {
+                statistics.KillDeathRatio = (double)statistics.Kills / statistics.Deaths;
+            }
+
+            bool updated = table.Update(statistics);
+            if (!updated)
+            {
+                // First match by this player
+                table.Insert(statistics);
+            }
         }
     }
 }

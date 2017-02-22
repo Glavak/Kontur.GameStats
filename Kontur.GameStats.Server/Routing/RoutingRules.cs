@@ -15,6 +15,8 @@
             router.Bind("^/servers/info/?$", "GET", new GetServersInfo());
             router.Bind("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "GET", new GetServersMatches());
 
+            router.Bind("^/reports/best-players/?$", "GET", new ReportBestPlayers());
+            router.Bind("^/reports/best-players/" + countRegexp + "/?$", "GET", new ReportBestPlayers());
             router.Bind("^/reports/recent-matches/?$", "GET", new ReportRecentMatches());
             router.Bind("^/reports/recent-matches/" + countRegexp + "/?$", "GET", new ReportRecentMatches());
         }

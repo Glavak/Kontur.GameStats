@@ -20,7 +20,6 @@ namespace Kontur.GameStats.Server
             };
 
             bool updated = table.Update(server);
-
             if (!updated)
             {
                 // First time we met this endpoint

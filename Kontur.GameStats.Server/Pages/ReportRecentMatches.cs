@@ -22,7 +22,7 @@ namespace Kontur.GameStats.Server
                 var table = database.GetCollection<Model.Match>("matches");
                 
                 recentMatchesCache = table
-                    .Find(Query.All("Timestamp", Query.Descending), 0, 50)
+                    .Find(Query.All("Timestamp", Query.Descending), 0, CountParameters.MaximumCountValue)
                     .ToArray();
 
                 lasTimeRecached = DateTime.Now;

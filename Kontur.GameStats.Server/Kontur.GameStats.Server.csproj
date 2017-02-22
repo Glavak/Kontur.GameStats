@@ -61,6 +61,7 @@
     <Compile Include="Model\Match.cs" />
     <Compile Include="Model\MatchResults.cs" />
     <Compile Include="Model\PlayerScore.cs" />
+    <Compile Include="Model\PlayerStatistics.cs" />
     <Compile Include="Model\Server.cs" />
     <Compile Include="Model\ServerInfo.cs" />
     <Compile Include="NamesContractResolver.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Pages\Parameters\CountParameters.cs" />
     <Compile Include="Pages\Parameters\MatchParameters.cs" />
     <Compile Include="Pages\Parameters\ServerParameters.cs" />
+    <Compile Include="Pages\ReportBestPlayers.cs" />
     <Compile Include="Pages\ReportRecentMatches.cs" />
     <Compile Include="Parameters\IParameters.cs" />
     <Compile Include="Parameters\IParametersExtension.cs" />
