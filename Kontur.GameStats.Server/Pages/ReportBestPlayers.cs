@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using Kontur.GameStats.Server.Model;
 using LiteDB;
 
 namespace Kontur.GameStats.Server
 {
     public class ReportBestPlayers : RequestHandler<CountParameters>
     {
-        private PlayerStatistics[] bestPlayersCache;
+        private Model.BestPlayersPlayer[] bestPlayersCache;
         private DateTime lasTimeRecached;
 
         public override object Process(CountParameters parameters, object data, LiteDatabase database)
@@ -20,7 +19,8 @@ namespace Kontur.GameStats.Server
 
                 bestPlayersCache = table
                     .Find(Query.All("KillDeathRatio", Query.Descending), 0, CountParameters.MaximumCountValue)
-                    .Where(x => x.KillDeathRatio > 0)
+                    .Where(x => x.KillToDeathRatio > 0) // If kd == 0, player has not yet played 10 matches or have no deaths
+                    .Select(x => new Model.BestPlayersPlayer(x))
                     .ToArray();
 
                 lasTimeRecached = DateTime.Now;

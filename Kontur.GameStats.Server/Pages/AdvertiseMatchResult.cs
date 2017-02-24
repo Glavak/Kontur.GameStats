@@ -1,5 +1,6 @@
 ﻿using Kontur.GameStats.Server.Model;
 using LiteDB;
+using System;
 
 namespace Kontur.GameStats.Server
 {
@@ -10,56 +11,86 @@ namespace Kontur.GameStats.Server
             var matchesTable = database.GetCollection<Model.Match>("matches");
             var serversTable = database.GetCollection<Model.Server>("servers");
 
-            if (!serversTable.Exists(x => x.Endpoint == parameters.Endpoint))
+            Model.Server server = serversTable.FindOne(x => x.Endpoint == parameters.Endpoint);
+
+            if (server == null)
             {
                 // Don't allow submitting mathes with invalid server's endpoint
                 throw new BadRequestException("Server with given endpoint does not exist");
             }
 
+            server.MatchesCount++;
+            int daysSinceServerAdvertisment = (DateTime.Now - server.AdvertisingTime).Days + 1;
+            server.AverageMatchesPerDay = (float)server.MatchesCount / daysSinceServerAdvertisment;
+            serversTable.Update(server);
+
             Match match = new Match()
             {
-                Endpoint = parameters.Endpoint,
+                Server = parameters.Endpoint,
                 Results = data.ToObject<MatchResults>(),
                 Timestamp = parameters.Timestamp
             };
 
+            bool firstPlayer = true;
+            float scoreboardPercent = 100;
             foreach (PlayerScore playerScore in match.Results.Scoreboard)
             {
-                UpdatePlayerStatistics(playerScore, database);
+                UpdatePlayerStatistics(match, playerScore, firstPlayer, scoreboardPercent, database);
+                scoreboardPercent -= 100 / (match.Results.Scoreboard.Count - 1);
+                firstPlayer = false;
             }
-
-            // Create not unique index on timestamp field
-            matchesTable.EnsureIndex("Timestamp", false);
 
             matchesTable.Insert(match);
 
             return new object();
         }
 
-        private static void UpdatePlayerStatistics(PlayerScore playerScore, LiteDatabase database)
+        private static void UpdatePlayerStatistics(Match match,
+            PlayerScore playerScore,
+            bool isWinner,
+            float scoreboardPercent,
+            LiteDatabase database)
         {
             var table = database.GetCollection<Model.PlayerStatistics>("playerStatistics");
 
             PlayerStatistics statistics = table.FindOne(x => x.Name == playerScore.Name);
 
-            if (statistics == null)
+            if (statistics != null)
             {
-                statistics = new PlayerStatistics() { Name = playerScore.Name };
+                // Update already existing player stats
+                if (isWinner) statistics.TotalMatchesWon++;
+                statistics.Kills += playerScore.Kills;
+                statistics.Deaths += playerScore.Deaths;
+
+                // TODO: check is all fields from PlayerStatistics get updated
+
+                if (statistics.TotalMatchesPlayed >= 10 && statistics.Deaths > 0)
+                {
+                    // If player has less than 10 matches or no deaths, set his
+                    // kd to 0, to move him down in ordering by kd
+                    statistics.KillToDeathRatio = (float)statistics.Kills / statistics.Deaths;
+                }
+
+                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, DateTime.Now);
+
+                table.Update(statistics);
             }
-
-            statistics.Matches++;
-            statistics.Kills += playerScore.Kills;
-            statistics.Deaths += playerScore.Deaths;
-
-            if (statistics.Matches >= 10 && statistics.Kills > 0)
+            else
             {
-                statistics.KillDeathRatio = (double)statistics.Kills / statistics.Deaths;
-            }
+                // It's' first match of this player
+                // Create new entry in statistics collection
+                statistics = new PlayerStatistics()
+                {
+                    Name = playerScore.Name,
+                    Kills = playerScore.Kills,
+                    Deaths = playerScore.Deaths,
+                    TotalMatchesWon = isWinner ? 1 : 0
+                };
 
-            bool updated = table.Update(statistics);
-            if (!updated)
-            {
-                // First match by this player
+                statistics.FirstMatchPlayed = DateTime.Now;
+
+                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, DateTime.Now);
+
                 table.Insert(statistics);
             }
         }

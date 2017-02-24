@@ -16,7 +16,7 @@ namespace Kontur.GameStats.Server.Model
 
         public int TimeLimit { get; set; }
 
-        public double TimeElapsed { get; set; }
+        public float TimeElapsed { get; set; }
 
         public List<PlayerScore> Scoreboard { get; set; }
 

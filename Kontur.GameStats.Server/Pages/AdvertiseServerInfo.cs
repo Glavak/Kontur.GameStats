@@ -13,16 +13,26 @@ namespace Kontur.GameStats.Server
         {
             var table = database.GetCollection<Model.Server>("servers");
 
-            var server = new Model.Server()
-            {
-                Endpoint = parameters.Endpoint,
-                Info = data.ToObject<ServerInfo>()
-            };
+            var server = table.FindOne(x => x.Endpoint == parameters.Endpoint);
 
-            bool updated = table.Update(server);
-            if (!updated)
+            if (server != null)
             {
-                // First time we met this endpoint
+                // Update already existing server
+                server.Info = data.ToObject<ServerInfo>();
+                server.AdvertisingTime = DateTime.Now; // TODO: should we count it lifetime from last or first advertising?
+
+                table.Update(server);
+            }
+            else
+            {
+                // First time we met this endpoint, insert new server
+                server = new Model.Server()
+                {
+                    Endpoint = parameters.Endpoint,
+                    Info = data.ToObject<ServerInfo>(),
+                    AdvertisingTime = DateTime.Now
+                };
+
                 table.Insert(server);
             }
 

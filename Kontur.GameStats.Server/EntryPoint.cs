@@ -17,7 +17,7 @@ namespace Kontur.GameStats.Server
 
             commandLineParser
                 .SetupHelp("h", "help")
-                .WithHeader($"{AppDomain.CurrentDomain.FriendlyName} [--prefix <prefix>]")
+                .WithHeader(AppDomain.CurrentDomain.FriendlyName + " [--prefix <prefix>]")
                 .Callback(text => Console.WriteLine(text));
 
             if (commandLineParser.Parse(args).HelpCalled)

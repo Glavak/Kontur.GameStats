@@ -9,8 +9,9 @@ namespace Kontur.GameStats.Server.Model
 {
     public class Match
     {
-        public string Endpoint { get; set; }
+        public string Server { get; set; }
 
+        [BsonIndex(false)]
         public DateTime Timestamp { get; set; }
 
         public MatchResults Results { get; set; }

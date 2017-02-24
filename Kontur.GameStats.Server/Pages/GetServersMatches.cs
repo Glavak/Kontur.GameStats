@@ -9,7 +9,7 @@ namespace Kontur.GameStats.Server
             var table = database.GetCollection<Model.Match>("matches");
 
             Model.MatchResults result = table
-                .FindOne(x => x.Endpoint == parameters.Endpoint && x.Timestamp == parameters.Timestamp)
+                .FindOne(x => x.Server == parameters.Endpoint && x.Timestamp == parameters.Timestamp)
                 .Results;
 
             if (result == null)

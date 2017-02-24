@@ -2,9 +2,9 @@
 {
     public class RouterBinding
     {
-        public string AddressRegexp { get; }
-        public string HttpMethod { get; }
-        public IRequestHandler RequestHandler { get; }
+        public string AddressRegexp { get; private set; }
+        public string HttpMethod { get; private set; }
+        public IRequestHandler RequestHandler { get; private set; }
 
         public RouterBinding(string addressRegexp, string httpMethod, IRequestHandler requestHandler)
         {

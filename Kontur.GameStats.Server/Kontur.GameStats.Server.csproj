@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Kontur.GameStats.Server</RootNamespace>
     <AssemblyName>Kontur.GameStats.Server</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,15 +65,21 @@
     <Compile Include="Model\PlayerStatistics.cs" />
     <Compile Include="Model\Server.cs" />
     <Compile Include="Model\ServerInfo.cs" />
+    <Compile Include="Model\Special\BestPlayersPlayer.cs" />
+    <Compile Include="Model\Special\PlayerStatsPlayer.cs" />
+    <Compile Include="Model\Special\PopularServersServer.cs" />
     <Compile Include="NamesContractResolver.cs" />
     <Compile Include="Pages\AdvertiseMatchResult.cs" />
     <Compile Include="Pages\AdvertiseServerInfo.cs" />
     <Compile Include="Pages\GetServerInfo.cs" />
     <Compile Include="Pages\GetServersMatches.cs" />
+    <Compile Include="Pages\Parameters\PlayerNameParameters.cs" />
     <Compile Include="Pages\Parameters\CountParameters.cs" />
     <Compile Include="Pages\Parameters\MatchParameters.cs" />
     <Compile Include="Pages\Parameters\ServerParameters.cs" />
     <Compile Include="Pages\ReportBestPlayers.cs" />
+    <Compile Include="Pages\GetPlayerStats.cs" />
+    <Compile Include="Pages\ReportPopularServers.cs" />
     <Compile Include="Pages\ReportRecentMatches.cs" />
     <Compile Include="Parameters\IParameters.cs" />
     <Compile Include="Parameters\IParametersExtension.cs" />
