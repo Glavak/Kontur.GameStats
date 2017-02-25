@@ -3,13 +3,18 @@ using LiteDB;
 
 namespace Kontur.GameStats.Server
 {
-    public class GetServersInfo : RequestHandler<CountParameters>
+    public class GetServersInfo : RequestHandler<EmptyParameters>
     {
-        public override object Process(CountParameters parameters, object data, LiteDatabase database)
-        {
-            var table = database.GetCollection<Model.Server>("servers");
+        private IRepository<Model.Server> serversTable;
 
-            return table.FindAll();
+        public GetServersInfo(IRepository<Model.Server> serversTable)
+        {
+            this.serversTable = serversTable;
+        }
+
+        public override object Process(EmptyParameters parameters, object data)
+        {
+            return serversTable.GetAll();
         }
     }
 }

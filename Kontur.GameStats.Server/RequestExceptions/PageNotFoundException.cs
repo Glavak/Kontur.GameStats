@@ -2,7 +2,7 @@
 
 namespace Kontur.GameStats.Server
 {
-    class PageNotFoundException : Exception
+    public class PageNotFoundException : Exception
     {
         public PageNotFoundException(string message) : base(message)
         {

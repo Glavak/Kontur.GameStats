@@ -6,12 +6,20 @@ namespace Kontur.GameStats.Server
 {
     public class AdvertiseMatchResult : RequestHandler<MatchParameters>
     {
-        public override object Process(MatchParameters parameters, dynamic data, LiteDatabase database)
-        {
-            var matchesTable = database.GetCollection<Model.Match>("matches");
-            var serversTable = database.GetCollection<Model.Server>("servers");
+        private IRepository<Model.Server> serversTable;
+        private IRepository<Model.Match> matchesTable;
+        private IRepository<Model.PlayerStatistics> statisticsTable;
 
-            Model.Server server = serversTable.FindOne(x => x.Endpoint == parameters.Endpoint);
+        public AdvertiseMatchResult(IRepository<Model.Server> serversTable, IRepository<Model.Match> matchesTable, IRepository<Model.PlayerStatistics> statisticsTable)
+        {
+            this.serversTable = serversTable;
+            this.matchesTable = matchesTable;
+            this.statisticsTable = statisticsTable;
+        }
+
+        public override object Process(MatchParameters parameters, dynamic data)
+        {
+            var server = serversTable.GetOne(x => x.Endpoint == parameters.Endpoint);
 
             if (server == null)
             {
@@ -35,7 +43,7 @@ namespace Kontur.GameStats.Server
             float scoreboardPercent = 100;
             foreach (PlayerScore playerScore in match.Results.Scoreboard)
             {
-                UpdatePlayerStatistics(match, playerScore, firstPlayer, scoreboardPercent, database);
+                UpdatePlayerStatistics(match, playerScore, firstPlayer, scoreboardPercent);
                 scoreboardPercent -= 100 / (match.Results.Scoreboard.Count - 1);
                 firstPlayer = false;
             }
@@ -45,15 +53,12 @@ namespace Kontur.GameStats.Server
             return new object();
         }
 
-        private static void UpdatePlayerStatistics(Match match,
+        private void UpdatePlayerStatistics(Match match,
             PlayerScore playerScore,
             bool isWinner,
-            float scoreboardPercent,
-            LiteDatabase database)
+            float scoreboardPercent)
         {
-            var table = database.GetCollection<Model.PlayerStatistics>("playerStatistics");
-
-            PlayerStatistics statistics = table.FindOne(x => x.Name == playerScore.Name);
+            PlayerStatistics statistics = statisticsTable.GetOne(x => x.Name == playerScore.Name);
 
             if (statistics != null)
             {
@@ -73,7 +78,7 @@ namespace Kontur.GameStats.Server
 
                 statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, DateTime.Now);
 
-                table.Update(statistics);
+                statisticsTable.Update(statistics);
             }
             else
             {
@@ -91,7 +96,7 @@ namespace Kontur.GameStats.Server
 
                 statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, DateTime.Now);
 
-                table.Insert(statistics);
+                statisticsTable.Insert(statistics);
             }
         }
     }

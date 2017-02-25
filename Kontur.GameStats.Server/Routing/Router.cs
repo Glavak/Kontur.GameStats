@@ -1,24 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using LiteDB;
+using Microsoft.Practices.Unity;
 
 namespace Kontur.GameStats.Server
 {
     public class Router
     {
         private readonly List<RouterBinding> bindings;
-        private readonly LiteDatabase database;
+        private readonly UnityContainer unityContainer;
 
-        public Router(LiteDatabase database)
+        public Router(UnityContainer unityContainer)
         {
-            this.database = database;
+            this.unityContainer = unityContainer;
 
             bindings = new List<RouterBinding>();
         }
 
-        public void Bind(string addressRegex, string httpMethod, IRequestHandler handler)
+        public void Bind<THandler>(string addressRegex, string httpMethod)
+            where THandler : IRequestHandler
         {
-            bindings.Add(new RouterBinding(addressRegex, httpMethod, handler));
+            bindings.Add(new RouterBinding(addressRegex, httpMethod, typeof(THandler)));
         }
 
         public object RouteRequest(string address, object data, string httpMethod)
@@ -36,7 +38,9 @@ namespace Kontur.GameStats.Server
                 {
                     parameters[i - 1] = match.Groups[i].Value;
                 }
-                return bind.RequestHandler.Handle(parameters, data, database);
+
+                var handler = (IRequestHandler)unityContainer.Resolve(bind.RequestHandlerType);
+                return handler.Handle(parameters, data);
             }
 
             throw new PageNotFoundException("");

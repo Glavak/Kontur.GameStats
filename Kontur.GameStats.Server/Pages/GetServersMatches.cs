@@ -4,12 +4,17 @@ namespace Kontur.GameStats.Server
 {
     public class GetServersMatches : RequestHandler<MatchParameters>
     {
-        public override object Process(MatchParameters parameters, object data, LiteDatabase database)
-        {
-            var table = database.GetCollection<Model.Match>("matches");
+        private IRepository<Model.Match> matchesTable;
 
-            Model.MatchResults result = table
-                .FindOne(x => x.Server == parameters.Endpoint && x.Timestamp == parameters.Timestamp)
+        public GetServersMatches(IRepository<Model.Match> matchesTable)
+        {
+            this.matchesTable = matchesTable;
+        }
+
+        public override object Process(MatchParameters parameters, object data)
+        {
+            Model.MatchResults result = matchesTable
+                .GetOne(x => x.Server == parameters.Endpoint && x.Timestamp == parameters.Timestamp)
                 .Results;
 
             if (result == null)

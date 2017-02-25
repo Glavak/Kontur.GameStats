@@ -9,19 +9,24 @@ namespace Kontur.GameStats.Server
 {
     public class ReportPopularServers : RequestHandler<CountParameters>
     {
+        private IRepository<Model.Server> serversTable;
+
+        public ReportPopularServers(IRepository<Model.Server> serversTable)
+        {
+            this.serversTable = serversTable;
+        }
+
         private Model.PopularServersServer[] popularServersCache;
         private DateTime lasTimeRecached;
 
-        public override object Process(CountParameters parameters, object data, LiteDB.LiteDatabase database)
+        public override object Process(CountParameters parameters, object data)
         {
             if (popularServersCache == null || (DateTime.Now - lasTimeRecached).TotalMinutes > 1)
             {
                 // Need to recache
 
-                var table = database.GetCollection<Model.Server>("servers");
-
-                var servers = table
-                    .Find(Query.All("AverageMatchesPerDay", Query.Descending), 0, CountParameters.MaximumCountValue)
+                var servers = serversTable
+                    .GetSorted("AverageMatchesPerDay", Query.Descending, CountParameters.MaximumCountValue)
                     .ToArray();
 
                 popularServersCache = servers

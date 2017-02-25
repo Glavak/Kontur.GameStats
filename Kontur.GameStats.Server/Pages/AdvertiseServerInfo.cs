@@ -9,11 +9,16 @@ namespace Kontur.GameStats.Server
 {
     public class AdvertiseServerInfo : RequestHandler<ServerParameters>
     {
-        public override object Process(ServerParameters parameters, dynamic data, LiteDatabase database)
-        {
-            var table = database.GetCollection<Model.Server>("servers");
+        private IRepository<Model.Server> serversTable;
 
-            var server = table.FindOne(x => x.Endpoint == parameters.Endpoint);
+        public AdvertiseServerInfo(IRepository<Model.Server> serversTable)
+        {
+            this.serversTable = serversTable;
+        }
+
+        public override object Process(ServerParameters parameters, dynamic data)
+        {
+            var server = serversTable.GetOne(x => x.Endpoint == parameters.Endpoint);
 
             if (server != null)
             {
@@ -21,7 +26,7 @@ namespace Kontur.GameStats.Server
                 server.Info = data.ToObject<ServerInfo>();
                 server.AdvertisingTime = DateTime.Now; // TODO: should we count it lifetime from last or first advertising?
 
-                table.Update(server);
+                serversTable.Update(server);
             }
             else
             {
@@ -33,7 +38,7 @@ namespace Kontur.GameStats.Server
                     AdvertisingTime = DateTime.Now
                 };
 
-                table.Insert(server);
+                serversTable.Insert(server);
             }
 
             return new object();

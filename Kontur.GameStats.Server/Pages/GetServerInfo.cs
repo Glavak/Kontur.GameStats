@@ -4,12 +4,17 @@ namespace Kontur.GameStats.Server
 {
     public class GetServerInfo : RequestHandler<ServerParameters>
     {
-        public override object Process(ServerParameters parameters, object data, LiteDatabase database)
-        {
-            var table = database.GetCollection<Model.Server>("servers");
+        private IRepository<Model.Server> serversTable;
 
-            Model.ServerInfo result = table
-                .FindOne(x => x.Endpoint == parameters.Endpoint)
+        public GetServerInfo(IRepository<Model.Server> serversTable)
+        {
+            this.serversTable = serversTable;
+        }
+
+        public override object Process(ServerParameters parameters, object data)
+        {
+            Model.ServerInfo result = serversTable
+                .GetOne(x => x.Endpoint == parameters.Endpoint)
                 .Info;
 
             if (result == null)

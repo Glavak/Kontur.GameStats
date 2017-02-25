@@ -2,28 +2,28 @@
 {
     public static class RoutingRules
     {
+        public const string endpointRegexp = @"(([a-zA-Z]+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})-(\d+))";
+        public const string timestampRegexp = @"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)";
+        public const string playerNameRegexp = @"([A-Za-z0-9\+%]+)";
+        public const string countRegexp = @"(\d+)";
+
         public static void BindRules(Router router)
         {
-            const string endpointRegexp = @"(([a-zA-Z]+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})-(\d+))";
-            const string timestampRegexp = @"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)";
-            const string playerNameRegexp = @"([A-Za-z0-9\+%]+)";
-            const string countRegexp = @"(\d+)";
+            router.Bind<AdvertiseServerInfo>("^/servers/" + endpointRegexp + "/info/?$", "PUT");
+            router.Bind<AdvertiseMatchResult>("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "PUT");
 
-            router.Bind("^/servers/" + endpointRegexp + "/info/?$", "PUT", new AdvertiseServerInfo());
-            router.Bind("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "PUT", new AdvertiseMatchResult());
+            router.Bind<GetServerInfo>("^/servers/" + endpointRegexp + "/info/?$", "GET");
+            router.Bind<GetServersInfo>("^/servers/info/?$", "GET");
+            router.Bind<GetServersMatches>("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "GET");
 
-            router.Bind("^/servers/" + endpointRegexp + "/info/?$", "GET", new GetServerInfo());
-            router.Bind("^/servers/info/?$", "GET", new GetServersInfo());
-            router.Bind("^/servers/" + endpointRegexp + "/matches/" + timestampRegexp + "/?$", "GET", new GetServersMatches());
+            router.Bind<GetPlayerStats>("^/players/" + playerNameRegexp + "/stats/?$", "GET");
 
-            router.Bind("^/players/"+playerNameRegexp+"/stats/?$", "GET", new GetPlayerStats());
-
-            router.Bind("^/reports/best-players/?$", "GET", new ReportBestPlayers());
-            router.Bind("^/reports/best-players/" + countRegexp + "/?$", "GET", new ReportBestPlayers());
-            router.Bind("^/reports/recent-matches/?$", "GET", new ReportRecentMatches());
-            router.Bind("^/reports/recent-matches/" + countRegexp + "/?$", "GET", new ReportRecentMatches());
-            router.Bind("^/reports/popular-servers/?$", "GET", new ReportPopularServers());
-            router.Bind("^/reports/popular-servers/" + countRegexp + "/?$", "GET", new ReportPopularServers());
+            router.Bind<ReportBestPlayers>("^/reports/best-players/?$", "GET");
+            router.Bind<ReportBestPlayers>("^/reports/best-players/" + countRegexp + "/?$", "GET");
+            router.Bind<ReportRecentMatches>("^/reports/recent-matches/?$", "GET");
+            router.Bind<ReportRecentMatches>("^/reports/recent-matches/" + countRegexp + "/?$", "GET");
+            router.Bind<ReportPopularServers>("^/reports/popular-servers/?$", "GET");
+            router.Bind<ReportPopularServers>("^/reports/popular-servers/" + countRegexp + "/?$", "GET");
         }
     }
 }

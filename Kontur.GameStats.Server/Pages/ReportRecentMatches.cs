@@ -13,16 +13,21 @@ namespace Kontur.GameStats.Server
         private Match[] recentMatchesCache;
         private DateTime lasTimeRecached;
 
-        public override object Process(CountParameters parameters, object data, LiteDatabase database)
+        private IRepository<Model.Match> matchesTable;
+
+        public ReportRecentMatches(IRepository<Model.Match> matchesTable)
+        {
+            this.matchesTable = matchesTable;
+        }
+
+        public override object Process(CountParameters parameters, object data)
         {
             if (recentMatchesCache == null || (DateTime.Now - lasTimeRecached).TotalMinutes > 1)
             {
                 // Need to recache
 
-                var table = database.GetCollection<Model.Match>("matches");
-                
-                recentMatchesCache = table
-                    .Find(Query.All("Timestamp", Query.Descending), 0, CountParameters.MaximumCountValue)
+                recentMatchesCache = matchesTable
+                    .GetSorted("Timestamp", Query.Descending, CountParameters.MaximumCountValue)
                     .ToArray();
 
                 lasTimeRecached = DateTime.Now;

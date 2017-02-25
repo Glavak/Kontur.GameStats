@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LiteDB;
 using Newtonsoft.Json;
+using Microsoft.Practices.Unity;
 
 namespace Kontur.GameStats.Server
 {
@@ -13,6 +14,7 @@ namespace Kontur.GameStats.Server
         private readonly HttpListener listener;
         private readonly Router router;
         private readonly LiteDatabase database;
+        private readonly UnityContainer unityContainer;
 
         private Thread listenerThread;
         private bool disposed;
@@ -22,9 +24,17 @@ namespace Kontur.GameStats.Server
         {
             listener = new HttpListener();
 
-            database = new LiteDatabase("MyDataBase.db");
+            unityContainer = new UnityContainer();
 
-            router = new Router(database);
+            database = new LiteDatabase("MyDataBase.db");
+            unityContainer.RegisterInstance(database);
+            unityContainer.RegisterType<IRepository<Model.Server>, LiteDBRepository<Model.Server>>(new ContainerControlledLifetimeManager());
+
+            unityContainer.RegisterType<IRepository<Model.Server>, LiteDBRepository<Model.Server>>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IRepository<Model.Match>, LiteDBRepository<Model.Match>>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IRepository<Model.PlayerStatistics>, LiteDBRepository<Model.PlayerStatistics>>(new ContainerControlledLifetimeManager());
+
+            router = new Router(unityContainer);
             RoutingRules.BindRules(router);
         }
 

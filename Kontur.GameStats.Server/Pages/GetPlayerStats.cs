@@ -8,11 +8,16 @@ namespace Kontur.GameStats.Server
 {
     public class GetPlayerStats : RequestHandler<PlayerNameParameters>
     {
-        public override object Process(PlayerNameParameters parameters, object data, LiteDB.LiteDatabase database)
-        {
-            var table = database.GetCollection<Model.PlayerStatistics>("playerStatistics");
+        private IRepository<Model.PlayerStatistics> statisticsTable;
 
-            var playerStatistics = table.FindOne(x=>x.Name == parameters.Name);
+        public GetPlayerStats(IRepository<Model.PlayerStatistics> statisticsTable)
+        {
+            this.statisticsTable = statisticsTable;
+        }
+
+        public override object Process(PlayerNameParameters parameters, object data)
+        {
+            var playerStatistics = statisticsTable.GetOne(x => x.Name == parameters.Name);
 
             var player = new Model.PlayerStatsPlayer(playerStatistics);
 
