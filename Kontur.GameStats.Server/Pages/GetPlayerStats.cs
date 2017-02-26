@@ -13,6 +13,11 @@
         {
             var playerStatistics = statisticsTable.GetOne(x => x.Name == parameters.Name);
 
+            if (playerStatistics == null)
+            {
+                throw new PageNotFoundException("Player with given name does not exist");
+            }
+
             var player = new Model.PlayerStatsPlayer(playerStatistics);
 
             return player;

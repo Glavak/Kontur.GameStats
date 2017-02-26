@@ -1,12 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Kontur.GameStats.Server
 {
+    /// <summary>
+    /// Abstract class, which extends functionality of RequestHandler by adding
+    /// caching layer. Child requestsHandler should override method Recache() for
+    /// it to return collection of element to return to client. If Recache() was
+    /// called during last minute, previously returned collection will be used
+    /// </summary>
+    /// <typeparam name="TElements">Type of elements in collection</typeparam>
     public abstract class CachedRequestHandler<TElements> : RequestHandler<CountParameters>
     {
-        // TODO: Replace array with IEnumerable
-        private TElements[] elementsCache;
+        private IEnumerable<TElements> elementsCache;
         private DateTime lasTimeRecached;
 
         private readonly ICurrentTimeGetter timeGetter;
@@ -20,7 +27,7 @@ namespace Kontur.GameStats.Server
         {
             if (elementsCache == null || (timeGetter.GetCurrentTime() - lasTimeRecached).TotalMinutes > 1)
             {
-                elementsCache = Recache();
+                elementsCache = Recache().ToArray(); // Call ToArray to evaluate linq expression
 
                 lasTimeRecached = timeGetter.GetCurrentTime();
             }
@@ -28,6 +35,6 @@ namespace Kontur.GameStats.Server
             return elementsCache.Take(parameters.Count);
         }
 
-        public abstract TElements[] Recache();
+        public abstract IEnumerable<TElements> Recache();
     }
 }

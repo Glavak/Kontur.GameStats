@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kontur.GameStats.Server;
+﻿using Kontur.GameStats.Server;
 using Microsoft.Practices.Unity;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests
 {
@@ -15,9 +15,9 @@ namespace Tests
             router = new Router(container);
 
             router.Bind<MockHandler>(@"/some/test/path/?", "GET");
-            router.Bind<MockHandler>(@"/" + 
-                RoutingRules.EndpointRegexp + "/" + 
-                RoutingRules.TimestampRegexp + "/?", 
+            router.Bind<MockHandler>(@"/" +
+                                     RoutingRules.EndpointRegexp + "/" +
+                                     RoutingRules.TimestampRegexp + "/?",
                 "PUT");
         }
 
@@ -52,7 +52,7 @@ namespace Tests
             MockHandler.CountCalled = 0;
             MockHandler.LastDataCalled = null;
 
-            var result = router.RouteRequest("/some/test/path/", "Another test data", "GET");
+            object result = router.RouteRequest("/some/test/path/", "Another test data", "GET");
 
             Assert.AreEqual(1, MockHandler.CountCalled);
             Assert.AreEqual("Another test data", MockHandler.LastDataCalled);
@@ -77,7 +77,7 @@ namespace Tests
         public void RegexpRouting()
         {
             MockHandler.CountCalled = 0;
-            MockHandler.LastDataCalled =null;
+            MockHandler.LastDataCalled = null;
 
             router.RouteRequest("/hostname-6565/2017-02-25T19:52:23Z", "Datadatadata", "PUT");
 

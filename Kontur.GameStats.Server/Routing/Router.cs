@@ -22,6 +22,14 @@ namespace Kontur.GameStats.Server
             bindings.Add(new RouterBinding(addressRegex, httpMethod, typeof(THandler)));
         }
 
+        /// <summary>
+        /// Finds appropriate requestHandler for given adress and httpMethod, parses
+        /// adress to parameters and calls requestHandler.Handle
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="data">Data, which will be passed to requestHandler.Handle</param>
+        /// <param name="httpMethod"></param>
+        /// <returns>Data returned from requestHandler</returns>
         public object RouteRequest(string address, object data, string httpMethod)
         {
             foreach (var bind in bindings)

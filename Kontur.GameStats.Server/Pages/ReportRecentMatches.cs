@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Kontur.GameStats.Server.Model;
 using LiteDB;
 
@@ -13,11 +14,10 @@ namespace Kontur.GameStats.Server
             this.matchesTable = matchesTable;
         }
 
-        public override Match[] Recache()
+        public override IEnumerable<Match> Recache()
         {
             return matchesTable
-                    .GetSorted("Timestamp", Query.Descending, CountParameters.MaximumCountValue)
-                    .ToArray();
+                .GetSorted("Timestamp", Query.Descending, CountParameters.MaximumCountValue);
         }
     }
 }

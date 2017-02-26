@@ -15,6 +15,11 @@ namespace Kontur.GameStats.Server
         {
             var server = serversTable.GetOne(x => x.Endpoint == parameters.Endpoint);
 
+            if (server == null)
+            {
+                throw new PageNotFoundException("Server with given endpoint does not exist");
+            }
+
             return new ServerStatsServer(server);
         }
     }

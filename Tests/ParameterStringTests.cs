@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Kontur.GameStats.Server;
+﻿using Kontur.GameStats.Server;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests
 {
@@ -17,9 +17,9 @@ namespace Tests
         [TestMethod]
         public void ParameterDefaultValue()
         {
-            var param = new ParameterString { Required = false, DefaultValue = "Default" };
+            var param = new ParameterString {Required = false, DefaultValue = "Default"};
 
-            var actual = param.ParseFromString(null);
+            object actual = param.ParseFromString(null);
 
             Assert.AreEqual("Default", actual);
         }
@@ -27,11 +27,22 @@ namespace Tests
         [TestMethod]
         public void ParameterString()
         {
-            var param = new ParameterString { Required = false, DefaultValue = "Default" };
+            var param = new ParameterString {Required = false, DefaultValue = "Default"};
 
-            var actual = param.ParseFromString("Value");
+            object actual = param.ParseFromString("Value");
 
             Assert.AreEqual("Value", actual);
+        }
+
+        [TestMethod]
+        public void CaseInsensitivity()
+        {
+            var param = new ParameterString {Required = true, Lowercase = true};
+
+            var actual1 = (string) param.ParseFromString("VaLuE");
+            var actual2 = (string) param.ParseFromString("vAlUe");
+
+            Assert.IsTrue(actual1 == actual2);
         }
     }
 }

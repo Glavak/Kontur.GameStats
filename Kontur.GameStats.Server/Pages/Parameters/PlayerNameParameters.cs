@@ -2,7 +2,7 @@
 {
     public class PlayerNameParameters : IParameters
     {
-        [ParameterString(Required = true)]
+        [ParameterString(Required = true, Lowercase = true)]
         public string Name { get; set; }
     }
 }

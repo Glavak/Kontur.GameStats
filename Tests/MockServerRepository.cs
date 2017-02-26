@@ -1,31 +1,41 @@
-﻿using Kontur.GameStats.Server;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using Kontur.GameStats.Server;
 
 namespace Tests
 {
     public class MockRepository<TElement> : IRepository<TElement>
     {
         public List<TElement> Elements = new List<TElement>();
-        public int UpdateCalledTimes;
-        public TElement LastUpdateElement;
         public int InsertCalledTimes;
         public TElement LastInsertElement;
+        public TElement LastUpdateElement;
+        public int UpdateCalledTimes;
 
         public IEnumerable<TElement> GetAll()
         {
             return Elements;
         }
 
-        public TElement GetOne(System.Linq.Expressions.Expression<Func<TElement, bool>> predicate)
+        public TElement GetOne(Expression<Func<TElement, bool>> predicate)
         {
-            return Elements.First(predicate.Compile());
+            try
+            {
+                return Elements.First(predicate.Compile());
+            }
+            catch (InvalidOperationException e)
+            {
+                // No such element
+                return default(TElement);
+            }
         }
 
         public IEnumerable<TElement> GetSorted(string indexProperty, int order, int count)
         {
-            return Elements.OrderBy(x=>x, new ElementComparer<TElement>(indexProperty, order)).Take(count);
+            return Elements.OrderBy(x => x, new ElementComparer<TElement>(indexProperty, order)).Take(count);
         }
 
         public bool Update(TElement entity)
@@ -47,8 +57,8 @@ namespace Tests
 
     public class ElementComparer<TElement> : IComparer<TElement>
     {
-        private readonly string propertyName;
         private readonly int order;
+        private readonly string propertyName;
 
         public ElementComparer(string propertyName, int order)
         {
@@ -58,17 +68,15 @@ namespace Tests
 
         public int Compare(TElement x, TElement y)
         {
-            var property = typeof(TElement).GetProperty(propertyName);
+            PropertyInfo property = typeof(TElement).GetProperty(propertyName);
 
-            var xValue = property.GetValue(x);
-            var yValue = property.GetValue(y);
+            object xValue = property.GetValue(x);
+            object yValue = property.GetValue(y);
 
             var xComparable = xValue as IComparable;
-            
-            if(xComparable == null)
-            {
+
+            if (xComparable == null)
                 throw new Exception("Not comparable");
-            }
 
             return xComparable.CompareTo(yValue) * order;
         }

@@ -1,5 +1,10 @@
 ﻿namespace Kontur.GameStats.Server
 {
+    /// <summary>
+    /// Abstract class, which parses parameters from string to TParameters, and
+    /// calls overriden by child method Process()
+    /// </summary>
+    /// <typeparam name="TParameters">IParameters object, that child request handler require</typeparam>
     public abstract class RequestHandler<TParameters> : IRequestHandler
         where TParameters : IParameters, new()
     {

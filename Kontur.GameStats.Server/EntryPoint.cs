@@ -32,12 +32,19 @@ namespace Kontur.GameStats.Server
             {
                 server.Start(options.Prefix);
 
-                Console.ReadKey(true);
+                Console.WriteLine("Server started. Press q to terminate.");
+
+                ConsoleKeyInfo k;
+                do
+                {
+                    k = Console.ReadKey(true);
+                } while (k.Key != ConsoleKey.Q);
             }
         }
 
         private class Options
         {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public string Prefix { get; set; }
         }
     }

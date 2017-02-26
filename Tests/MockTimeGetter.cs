@@ -5,12 +5,12 @@ namespace Tests
 {
     public class MockTimeGetter : ICurrentTimeGetter
     {
-        public DateTime Time { get; set; }
-
         public MockTimeGetter(DateTime time)
         {
             Time = time;
         }
+
+        public DateTime Time { get; set; }
 
         public DateTime GetCurrentTime()
         {

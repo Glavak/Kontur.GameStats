@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using LiteDB;
 
 namespace Kontur.GameStats.Server
@@ -12,13 +13,12 @@ namespace Kontur.GameStats.Server
             this.statisticsTable = statisticsTable;
         }
 
-        public override Model.BestPlayersPlayer[] Recache()
+        public override IEnumerable<Model.BestPlayersPlayer> Recache()
         {
             return statisticsTable
                 .GetSorted("KillDeathRatio", Query.Descending, CountParameters.MaximumCountValue)
                 .Where(x => x.KillToDeathRatio > 0) // If kd == 0, player has not yet played 10 matches or have no deaths
-                .Select(x => new Model.BestPlayersPlayer(x)) // Convert to type, that contains required for this report page fields
-                .ToArray();
+                .Select(x => new Model.BestPlayersPlayer(x)); // Convert to type, that contains required for this report page fields
         }
     }
 }

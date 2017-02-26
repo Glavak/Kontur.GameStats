@@ -1,4 +1,5 @@
-﻿using LiteDB;
+﻿using System.Collections.Generic;
+using LiteDB;
 using System.Linq;
 
 namespace Kontur.GameStats.Server
@@ -12,14 +13,13 @@ namespace Kontur.GameStats.Server
             this.serversTable = serversTable;
         }
 
-        public override Model.PopularServersServer[] Recache()
+        public override IEnumerable<Model.PopularServersServer> Recache()
         {
             var servers = serversTable
                 .GetSorted("AverageMatchesPerDay", Query.Descending, CountParameters.MaximumCountValue);
 
             return servers
-                .Select(x => new Model.PopularServersServer(x))
-                .ToArray();
+                .Select(x => new Model.PopularServersServer(x));
         }
     }
 }
