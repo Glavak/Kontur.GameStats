@@ -71,8 +71,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Db\IRepository.cs" />
-    <Compile Include="Db\LiteDBRepository.cs" />
+    <Compile Include="Data\IRepository.cs" />
+    <Compile Include="Data\LiteDBRepository.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\LoggerToFile.cs" />
+    <Compile Include="Logging\MessageType.cs" />
     <Compile Include="Model\Match.cs" />
     <Compile Include="Model\MatchResults.cs" />
     <Compile Include="Model\PlayerScore.cs" />
@@ -104,6 +107,7 @@
     <Compile Include="Parameters\ParameterTimestamp.cs" />
     <Compile Include="RequestExceptions\BadRequestException.cs" />
     <Compile Include="RequestExceptions\PageNotFoundException.cs" />
+    <Compile Include="Routing\CachedRequestHandler.cs" />
     <Compile Include="Routing\IRequestHandler.cs" />
     <Compile Include="Routing\RequestHandler.cs" />
     <Compile Include="Pages\GetServersInfo.cs" />

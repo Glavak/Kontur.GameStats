@@ -14,6 +14,7 @@ namespace Kontur.GameStats.Server
         private readonly HttpListener listener;
         private readonly Router router;
         private readonly LiteDatabase database;
+        private readonly LoggerToFile logger;
         private readonly UnityContainer unityContainer;
 
         private Thread listenerThread;
@@ -28,7 +29,15 @@ namespace Kontur.GameStats.Server
 
             database = new LiteDatabase("MyDataBase.db");
             unityContainer.RegisterInstance(database);
-            unityContainer.RegisterType<IRepository<Model.Server>, LiteDBRepository<Model.Server>>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType
+                <IRepository<Model.Server>, LiteDBRepository<Model.Server>>
+                (new ContainerControlledLifetimeManager());
+
+            logger = new LoggerToFile("log.txt");
+            unityContainer.RegisterInstance(logger);
+            unityContainer.RegisterType
+                <ILogger, LoggerToFile>
+                (new ContainerControlledLifetimeManager());
 
             unityContainer.RegisterType<IRepository<Model.Server>, LiteDBRepository<Model.Server>>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<IRepository<Model.Match>, LiteDBRepository<Model.Match>>(new ContainerControlledLifetimeManager());
@@ -79,14 +88,13 @@ namespace Kontur.GameStats.Server
         {
             if (disposed)
                 return;
-
             disposed = true;
 
             Stop();
 
             listener.Close();
-
             database.Dispose();
+            logger.Dispose();
         }
 
         private void Listen()
@@ -108,7 +116,12 @@ namespace Kontur.GameStats.Server
                 }
                 catch (Exception error)
                 {
-                    // TODO: log errors
+                    logger.Log(MessageType.Error,
+                        "Internal server error generated. Exception: \"" +
+                        error.Message +
+                        "\". Stack trace: \"" +
+                        error.StackTrace +
+                        "\"");
                 }
             }
         }
@@ -151,11 +164,17 @@ namespace Kontur.GameStats.Server
                 listenerContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 resultText = e.Message;
             }
-            catch (Exception e)
+            catch (Exception error)
             {
                 // Some internal error, catch it to log and not break the server
 
-                // TODO: log error
+                logger.Log(MessageType.Error,
+                    "Internal server error generated. Exception: \"" +
+                    error.Message +
+                    "\". Stack trace: \"" +
+                    error.StackTrace +
+                    "\"");
+
                 listenerContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
             finally

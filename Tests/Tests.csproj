@@ -71,9 +71,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="MockServerRepository.cs" />
     <Compile Include="ParameterIntegerTests.cs" />
     <Compile Include="ParameterStringTests.cs" />
     <Compile Include="ParameterTimetampTests.cs" />
+    <Compile Include="PopularServersTests.cs" />
     <Compile Include="RouterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

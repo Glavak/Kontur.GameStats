@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server
 {
-    public class ReportPopularServers : RequestHandler<CountParameters>
+    public class ReportPopularServers : CachedRequestHandler<Model.PopularServersServer>
     {
         private IRepository<Model.Server> serversTable;
 
@@ -16,27 +16,14 @@ namespace Kontur.GameStats.Server
             this.serversTable = serversTable;
         }
 
-        private Model.PopularServersServer[] popularServersCache;
-        private DateTime lasTimeRecached;
-
-        public override object Process(CountParameters parameters, object data)
+        public override Model.PopularServersServer[] Recache()
         {
-            if (popularServersCache == null || (DateTime.Now - lasTimeRecached).TotalMinutes > 1)
-            {
-                // Need to recache
+            var servers = serversTable
+                .GetSorted("AverageMatchesPerDay", Query.Descending, CountParameters.MaximumCountValue);
 
-                var servers = serversTable
-                    .GetSorted("AverageMatchesPerDay", Query.Descending, CountParameters.MaximumCountValue)
-                    .ToArray();
-
-                popularServersCache = servers
-                    .Select(x => new Model.PopularServersServer(x))
-                    .ToArray();
-
-                lasTimeRecached = DateTime.Now;
-            }
-
-            return popularServersCache.Take(parameters.Count);
+            return servers
+                .Select(x => new Model.PopularServersServer(x))
+                .ToArray();
         }
     }
 }

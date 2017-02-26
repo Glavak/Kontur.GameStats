@@ -8,11 +8,8 @@ using LiteDB;
 
 namespace Kontur.GameStats.Server
 {
-    public class ReportRecentMatches : RequestHandler<CountParameters>
+    public class ReportRecentMatches : CachedRequestHandler<Model.Match>
     {
-        private Match[] recentMatchesCache;
-        private DateTime lasTimeRecached;
-
         private IRepository<Model.Match> matchesTable;
 
         public ReportRecentMatches(IRepository<Model.Match> matchesTable)
@@ -20,20 +17,11 @@ namespace Kontur.GameStats.Server
             this.matchesTable = matchesTable;
         }
 
-        public override object Process(CountParameters parameters, object data)
+        public override Match[] Recache()
         {
-            if (recentMatchesCache == null || (DateTime.Now - lasTimeRecached).TotalMinutes > 1)
-            {
-                // Need to recache
-
-                recentMatchesCache = matchesTable
+            return matchesTable
                     .GetSorted("Timestamp", Query.Descending, CountParameters.MaximumCountValue)
                     .ToArray();
-
-                lasTimeRecached = DateTime.Now;
-            }
-
-            return recentMatchesCache.Take(parameters.Count);
         }
     }
 }
