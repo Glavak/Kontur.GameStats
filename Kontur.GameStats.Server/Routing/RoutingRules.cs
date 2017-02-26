@@ -9,14 +9,18 @@
 
         public static void BindRules(Router router)
         {
+            // Accept data from game servers:
             router.Bind<AdvertiseServerInfo>("^/servers/" + EndpointRegexp + "/info/?$", "PUT");
             router.Bind<AdvertiseMatchResult>("^/servers/" + EndpointRegexp + "/matches/" + TimestampRegexp + "/?$", "PUT");
 
+            // Get data about game servers:
             router.Bind<GetServerInfo>("^/servers/" + EndpointRegexp + "/info/?$", "GET");
             router.Bind<GetServersInfo>("^/servers/info/?$", "GET");
             router.Bind<GetServersMatches>("^/servers/" + EndpointRegexp + "/matches/" + TimestampRegexp + "/?$", "GET");
 
+            // Get statistics
             router.Bind<GetPlayerStats>("^/players/" + PlayerNameRegexp + "/stats/?$", "GET");
+            router.Bind<GetServerStats>("^/servers/" + EndpointRegexp + "/stats/?$", "GET");
 
             router.Bind<ReportBestPlayers>("^/reports/best-players/?$", "GET");
             router.Bind<ReportBestPlayers>("^/reports/best-players/" + CountRegexp + "/?$", "GET");

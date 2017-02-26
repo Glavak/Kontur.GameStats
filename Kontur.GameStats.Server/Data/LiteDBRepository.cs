@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace Kontur.GameStats.Server
 {
-    public class LiteDBRepository<TEntity> : IRepository<TEntity>
+    public class LiteDbRepository<TEntity> : IRepository<TEntity>
     {
         private readonly LiteCollection<TEntity> table;
 
-        public LiteDBRepository(LiteDatabase database)
+        public LiteDbRepository(LiteDatabase database)
         {
             var collectionName = typeof(TEntity).Name;
             table = database.GetCollection<TEntity>(collectionName);

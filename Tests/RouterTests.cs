@@ -1,8 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kontur.GameStats.Server;
-using Moq;
-using LiteDB;
 using Microsoft.Practices.Unity;
 
 namespace Tests
@@ -10,7 +7,7 @@ namespace Tests
     [TestClass]
     public class RouterTests
     {
-        Router router;
+        private readonly Router router;
 
         public RouterTests()
         {
@@ -27,12 +24,12 @@ namespace Tests
         [TestMethod]
         public void SimpleRouting()
         {
-            MockHandler.countCalled = 0;
-            MockHandler.lastDataCalled = null;
+            MockHandler.CountCalled = 0;
+            MockHandler.LastDataCalled = null;
 
             router.RouteRequest("/some/test/path", 42, "GET");
-            Assert.AreEqual(1, MockHandler.countCalled);
-            Assert.AreEqual(42, MockHandler.lastDataCalled);
+            Assert.AreEqual(1, MockHandler.CountCalled);
+            Assert.AreEqual(42, MockHandler.LastDataCalled);
         }
 
         [TestMethod]
@@ -52,13 +49,13 @@ namespace Tests
         [TestMethod]
         public void RoutingReturnObject()
         {
-            MockHandler.countCalled = 0;
-            MockHandler.lastDataCalled = null;
+            MockHandler.CountCalled = 0;
+            MockHandler.LastDataCalled = null;
 
             var result = router.RouteRequest("/some/test/path/", "Another test data", "GET");
 
-            Assert.AreEqual(1, MockHandler.countCalled);
-            Assert.AreEqual("Another test data", MockHandler.lastDataCalled);
+            Assert.AreEqual(1, MockHandler.CountCalled);
+            Assert.AreEqual("Another test data", MockHandler.LastDataCalled);
             Assert.AreEqual("Test returned object", result);
         }
 
@@ -79,27 +76,27 @@ namespace Tests
         [TestMethod]
         public void RegexpRouting()
         {
-            MockHandler.countCalled = 0;
-            MockHandler.lastDataCalled =null;
+            MockHandler.CountCalled = 0;
+            MockHandler.LastDataCalled =null;
 
             router.RouteRequest("/hostname-6565/2017-02-25T19:52:23Z", "Datadatadata", "PUT");
 
-            Assert.AreEqual(1, MockHandler.countCalled);
-            Assert.AreEqual("Datadatadata", MockHandler.lastDataCalled);
+            Assert.AreEqual(1, MockHandler.CountCalled);
+            Assert.AreEqual("Datadatadata", MockHandler.LastDataCalled);
         }
 
         // TODO: test parameter passing to RequestHandler
     }
-    
-    class MockHandler : RequestHandler<EmptyParameters>
+
+    internal class MockHandler : RequestHandler<EmptyParameters>
     {
-        public static int countCalled;
-        public static object lastDataCalled;
+        public static int CountCalled;
+        public static object LastDataCalled;
 
         public override object Process(EmptyParameters parameters, object data)
         {
-            countCalled++;
-            lastDataCalled = data;
+            CountCalled++;
+            LastDataCalled = data;
 
             return "Test returned object";
         }

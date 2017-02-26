@@ -75,6 +75,7 @@
     <Compile Include="CurrentTime\SystemTimeGetter.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="Data\LiteDBRepository.cs" />
+    <Compile Include="DictionaryExtension.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LoggerToFile.cs" />
     <Compile Include="Logging\MessageType.cs" />
@@ -87,11 +88,15 @@
     <Compile Include="Model\Special\BestPlayersPlayer.cs" />
     <Compile Include="Model\Special\PlayerStatsPlayer.cs" />
     <Compile Include="Model\Special\PopularServersServer.cs" />
+    <Compile Include="Model\Special\ServersInfoServer.cs" />
+    <Compile Include="Model\Special\ServerStatsServer.cs" />
+    <Compile Include="MyMath.cs" />
     <Compile Include="NamesContractResolver.cs" />
     <Compile Include="Pages\AdvertiseMatchResult.cs" />
     <Compile Include="Pages\AdvertiseServerInfo.cs" />
     <Compile Include="Pages\GetServerInfo.cs" />
     <Compile Include="Pages\GetServersMatches.cs" />
+    <Compile Include="Pages\GetServerStats.cs" />
     <Compile Include="Pages\Parameters\EmptyParameters.cs" />
     <Compile Include="Pages\Parameters\PlayerNameParameters.cs" />
     <Compile Include="Pages\Parameters\CountParameters.cs" />

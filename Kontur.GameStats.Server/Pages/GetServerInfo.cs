@@ -11,16 +11,15 @@
 
         public override object Process(ServerParameters parameters, object data)
         {
-            Model.ServerInfo result = serversTable
-                .GetOne(x => x.Endpoint == parameters.Endpoint)
-                .Info;
-
-            if (result == null)
+            var server = serversTable
+                .GetOne(x => x.Endpoint == parameters.Endpoint);
+            
+            if (server == null)
             {
                 throw new PageNotFoundException("Server with given endpoint does not exist");
             }
 
-            return result;
+            return server.Info;
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Kontur.GameStats.Server
             database = new LiteDatabase("MyDataBase.db");
             unityContainer.RegisterInstance(database);
             unityContainer.RegisterType
-                <IRepository<Model.Server>, LiteDBRepository<Model.Server>>
+                <IRepository<Model.Server>, LiteDbRepository<Model.Server>>
                 (new ContainerControlledLifetimeManager());
 
             logger = new LoggerToFile("log.txt");
@@ -42,9 +42,9 @@ namespace Kontur.GameStats.Server
                 <ICurrentTimeGetter, SystemTimeGetter>
                 (new ContainerControlledLifetimeManager());
 
-            unityContainer.RegisterType<IRepository<Model.Server>, LiteDBRepository<Model.Server>>(new ContainerControlledLifetimeManager());
-            unityContainer.RegisterType<IRepository<Model.Match>, LiteDBRepository<Model.Match>>(new ContainerControlledLifetimeManager());
-            unityContainer.RegisterType<IRepository<Model.PlayerStatistics>, LiteDBRepository<Model.PlayerStatistics>>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IRepository<Model.Server>, LiteDbRepository<Model.Server>>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IRepository<Model.Match>, LiteDbRepository<Model.Match>>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IRepository<Model.PlayerStatistics>, LiteDbRepository<Model.PlayerStatistics>>(new ContainerControlledLifetimeManager());
 
             router = new Router(unityContainer);
             RoutingRules.BindRules(router);

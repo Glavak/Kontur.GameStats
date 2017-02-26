@@ -5,6 +5,7 @@ namespace Kontur.GameStats.Server
 {
     public abstract class CachedRequestHandler<TElements> : RequestHandler<CountParameters>
     {
+        // TODO: Replace array with IEnumerable
         private TElements[] elementsCache;
         private DateTime lasTimeRecached;
 

@@ -10,9 +10,9 @@
 
         public PopularServersServer(Server prototype)
         {
-            this.Endpoint = prototype.Endpoint;
-            this.Name = prototype.Info.Name;
-            this.AverageMatchesPerDay = prototype.AverageMatchesPerDay;
+            Endpoint = prototype.Endpoint;
+            Name = prototype.Info.Name;
+            AverageMatchesPerDay = prototype.AverageMatchesPerDay;
         }
     }
 }

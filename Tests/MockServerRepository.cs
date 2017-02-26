@@ -1,14 +1,11 @@
 ﻿using Kontur.GameStats.Server;
-using Kontur.GameStats.Server.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tests
 {
-    class MockRepository<TElement> : IRepository<TElement>
+    public class MockRepository<TElement> : IRepository<TElement>
     {
         public List<TElement> Elements = new List<TElement>();
         public int UpdateCalledTimes;
@@ -50,8 +47,8 @@ namespace Tests
 
     public class ElementComparer<TElement> : IComparer<TElement>
     {
-        private string propertyName;
-        private int order;
+        private readonly string propertyName;
+        private readonly int order;
 
         public ElementComparer(string propertyName, int order)
         {

@@ -1,16 +1,17 @@
-﻿using Kontur.GameStats.Server.Model;
+﻿using System;
+using Kontur.GameStats.Server.Model;
 
 namespace Kontur.GameStats.Server
 {
     public class AdvertiseMatchResult : RequestHandler<MatchParameters>
     {
         private readonly IRepository<Model.Server> serversTable;
-        private readonly IRepository<Model.Match> matchesTable;
-        private readonly IRepository<Model.PlayerStatistics> statisticsTable;
+        private readonly IRepository<Match> matchesTable;
+        private readonly IRepository<PlayerStatistics> statisticsTable;
 
         private readonly ICurrentTimeGetter timeGetter;
 
-        public AdvertiseMatchResult(IRepository<Model.Server> serversTable, IRepository<Model.Match> matchesTable, IRepository<Model.PlayerStatistics> statisticsTable, ICurrentTimeGetter timeGetter)
+        public AdvertiseMatchResult(IRepository<Model.Server> serversTable, IRepository<Match> matchesTable, IRepository<PlayerStatistics> statisticsTable, ICurrentTimeGetter timeGetter)
         {
             this.serversTable = serversTable;
             this.matchesTable = matchesTable;
@@ -28,11 +29,6 @@ namespace Kontur.GameStats.Server
                 throw new BadRequestException("Server with given endpoint does not exist");
             }
 
-            server.MatchesCount++;
-            int daysSinceServerAdvertisment = (timeGetter.GetCurrentTime() - server.AdvertisingTime).Days + 1;
-            server.AverageMatchesPerDay = (float)server.MatchesCount / daysSinceServerAdvertisment;
-            serversTable.Update(server);
-
             Match match = new Match()
             {
                 Server = parameters.Endpoint,
@@ -40,11 +36,18 @@ namespace Kontur.GameStats.Server
                 Timestamp = parameters.Timestamp
             };
 
+            server.MatchPlayed(
+                match.Results.GameMode,
+                match.Results.Map,
+                match.Results.Scoreboard.Count,
+                parameters.Timestamp);
+            serversTable.Update(server);
+
             bool firstPlayer = true;
             float scoreboardPercent = 100f;
             foreach (PlayerScore playerScore in match.Results.Scoreboard)
             {
-                UpdatePlayerStatistics(match, playerScore, firstPlayer, scoreboardPercent);
+                UpdatePlayerStatistics(match, playerScore, firstPlayer, scoreboardPercent, parameters.Timestamp);
                 scoreboardPercent -= 100f / (match.Results.Scoreboard.Count - 1);
                 firstPlayer = false;
             }
@@ -54,10 +57,7 @@ namespace Kontur.GameStats.Server
             return new object();
         }
 
-        private void UpdatePlayerStatistics(Match match,
-            PlayerScore playerScore,
-            bool isWinner,
-            float scoreboardPercent)
+        private void UpdatePlayerStatistics(Match match, PlayerScore playerScore, bool isWinner, float scoreboardPercent, DateTime matchTime)
         {
             PlayerStatistics statistics = statisticsTable.GetOne(x => x.Name == playerScore.Name);
 
@@ -68,8 +68,6 @@ namespace Kontur.GameStats.Server
                 statistics.Kills += playerScore.Kills;
                 statistics.Deaths += playerScore.Deaths;
 
-                // TODO: check is all fields from PlayerStatistics get updated
-
                 if (statistics.TotalMatchesPlayed >= 10 && statistics.Deaths > 0)
                 {
                     // If player has less than 10 matches or no deaths, set his
@@ -77,7 +75,7 @@ namespace Kontur.GameStats.Server
                     statistics.KillToDeathRatio = (float)statistics.Kills / statistics.Deaths;
                 }
 
-                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, timeGetter.GetCurrentTime());
+                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, matchTime);
 
                 statisticsTable.Update(statistics);
             }
@@ -95,7 +93,7 @@ namespace Kontur.GameStats.Server
                 };
 
 
-                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, timeGetter.GetCurrentTime());
+                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, matchTime);
 
                 statisticsTable.Insert(statistics);
             }

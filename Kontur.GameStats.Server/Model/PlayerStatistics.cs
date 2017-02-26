@@ -43,14 +43,15 @@ namespace Kontur.GameStats.Server.Model
             GameModesPlayedCount = new Dictionary<string, int>();
         }
 
-        public void MatchPlayed(string server, string gameMode, float scoreboardPercent, DateTime currentTime)
+        public void MatchPlayed(string server, string gameMode, float scoreboardPercent, DateTime time)
         {
+            ServerMatchesCount.IncrementValue(server);
+            GameModesPlayedCount.IncrementValue(gameMode);
+
+            AverageScoreboardPercent = MyMath.UpdateAverage(AverageScoreboardPercent, TodayMathcesPlayed, scoreboardPercent);
             TotalMatchesPlayed++;
 
-            IncrementDictionaryValue(ServerMatchesCount, server);
-            IncrementDictionaryValue(GameModesPlayedCount, gameMode);
-
-            if (LastMatchPlayed.Day != currentTime.Day)
+            if (LastMatchPlayed.Day != time.Day)
             {
                 // It's a new day, reset today matches
                 TodayMathcesPlayed = 1;
@@ -65,24 +66,8 @@ namespace Kontur.GameStats.Server.Model
                 MaximumMathcesPerDay = TodayMathcesPlayed;
             }
 
-            LastMatchPlayed = currentTime;
+            LastMatchPlayed = time;
 
-            AverageScoreboardPercent =
-                (AverageScoreboardPercent * (TotalMatchesPlayed - 1)
-                + scoreboardPercent) / TotalMatchesPlayed;
-        }
-
-        private static void IncrementDictionaryValue(IDictionary<string, int> dictionary, string key)
-        {
-            int oldValue;
-            if (dictionary.TryGetValue(key, out oldValue))
-            {
-                dictionary[key] = oldValue + 1;
-            }
-            else
-            {
-                dictionary.Add(key, 1);
-            }
         }
     }
 }

@@ -4,11 +4,11 @@ using LiteDB;
 
 namespace Kontur.GameStats.Server
 {
-    public class ReportRecentMatches : CachedRequestHandler<Model.Match>
+    public class ReportRecentMatches : CachedRequestHandler<Match>
     {
-        private readonly IRepository<Model.Match> matchesTable;
+        private readonly IRepository<Match> matchesTable;
 
-        public ReportRecentMatches(IRepository<Model.Match> matchesTable, ICurrentTimeGetter timeGetter) : base(timeGetter)
+        public ReportRecentMatches(IRepository<Match> matchesTable, ICurrentTimeGetter timeGetter) : base(timeGetter)
         {
             this.matchesTable = matchesTable;
         }

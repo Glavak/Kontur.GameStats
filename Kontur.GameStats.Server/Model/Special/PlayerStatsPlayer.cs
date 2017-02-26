@@ -27,20 +27,20 @@ namespace Kontur.GameStats.Server.Model
 
         public PlayerStatsPlayer(PlayerStatistics prototype)
         {
-            this.TotalMatchesPlayed = prototype.TotalMatchesPlayed;
-            this.TotalMatchesWon = prototype.TotalMatchesWon;
-            this.FavoriteServer = GetMaxKey(prototype.ServerMatchesCount);
-            this.UniqueServers = prototype.ServerMatchesCount.Count;
-            this.FavoriteGameMode = GetMaxKey(prototype.GameModesPlayedCount);
-            this.AverageScoreboardPercent = prototype.AverageScoreboardPercent;
-            this.MaximumMathcesPerDay = prototype.MaximumMathcesPerDay;
+            TotalMatchesPlayed = prototype.TotalMatchesPlayed;
+            TotalMatchesWon = prototype.TotalMatchesWon;
+            FavoriteServer = GetMaxKey(prototype.ServerMatchesCount);
+            UniqueServers = prototype.ServerMatchesCount.Count;
+            FavoriteGameMode = GetMaxKey(prototype.GameModesPlayedCount);
+            AverageScoreboardPercent = prototype.AverageScoreboardPercent;
+            MaximumMathcesPerDay = prototype.MaximumMathcesPerDay;
             int daysPlayed = (prototype.LastMatchPlayed - prototype.FirstMatchPlayed).Days + 1;
-            this.AverageMathcesPerDay = prototype.TotalMatchesPlayed / daysPlayed;
-            this.LastMatchPlayed = prototype.LastMatchPlayed;
+            AverageMathcesPerDay = prototype.TotalMatchesPlayed / daysPlayed;
+            LastMatchPlayed = prototype.LastMatchPlayed;
 
             // Divide k/d, not use field from prototype, as it may contain 0
             // to exclude player from best players top
-            this.KillToDeathRatio = (float)prototype.Kills / prototype.Deaths;
+            KillToDeathRatio = (float)prototype.Kills / prototype.Deaths;
         }
 
         private static string GetMaxKey(Dictionary<string, int> dictionary)
