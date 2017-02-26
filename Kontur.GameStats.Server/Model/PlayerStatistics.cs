@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LiteDB;
-using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.Model
 {
@@ -76,7 +72,7 @@ namespace Kontur.GameStats.Server.Model
                 + scoreboardPercent) / TotalMatchesPlayed;
         }
 
-        private void IncrementDictionaryValue(Dictionary<string, int> dictionary, string key)
+        private static void IncrementDictionaryValue(IDictionary<string, int> dictionary, string key)
         {
             int oldValue;
             if (dictionary.TryGetValue(key, out oldValue))

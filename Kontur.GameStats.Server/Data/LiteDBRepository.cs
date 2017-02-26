@@ -1,15 +1,12 @@
 ﻿using LiteDB;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server
 {
-    class LiteDBRepository<TEntity> : IRepository<TEntity>
+    public class LiteDBRepository<TEntity> : IRepository<TEntity>
     {
-        LiteCollection<TEntity> table;
+        private readonly LiteCollection<TEntity> table;
 
         public LiteDBRepository(LiteDatabase database)
         {

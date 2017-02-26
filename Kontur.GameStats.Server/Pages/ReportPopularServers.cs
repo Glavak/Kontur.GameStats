@@ -1,17 +1,13 @@
 ﻿using LiteDB;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server
 {
     public class ReportPopularServers : CachedRequestHandler<Model.PopularServersServer>
     {
-        private IRepository<Model.Server> serversTable;
+        private readonly IRepository<Model.Server> serversTable;
 
-        public ReportPopularServers(IRepository<Model.Server> serversTable)
+        public ReportPopularServers(IRepository<Model.Server> serversTable, ICurrentTimeGetter timeGetter) : base(timeGetter)
         {
             this.serversTable = serversTable;
         }

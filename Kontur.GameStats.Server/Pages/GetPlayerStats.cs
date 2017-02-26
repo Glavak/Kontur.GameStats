@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kontur.GameStats.Server
+﻿namespace Kontur.GameStats.Server
 {
     public class GetPlayerStats : RequestHandler<PlayerNameParameters>
     {
-        private IRepository<Model.PlayerStatistics> statisticsTable;
+        private readonly IRepository<Model.PlayerStatistics> statisticsTable;
 
         public GetPlayerStats(IRepository<Model.PlayerStatistics> statisticsTable)
         {

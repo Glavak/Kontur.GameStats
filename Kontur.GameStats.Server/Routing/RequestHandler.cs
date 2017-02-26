@@ -1,6 +1,4 @@
-﻿using LiteDB;
-
-namespace Kontur.GameStats.Server
+﻿namespace Kontur.GameStats.Server
 {
     public abstract class RequestHandler<TParameters> : IRequestHandler
         where TParameters : IParameters, new()

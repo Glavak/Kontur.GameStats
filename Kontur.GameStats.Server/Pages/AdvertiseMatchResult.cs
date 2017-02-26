@@ -1,20 +1,21 @@
 ﻿using Kontur.GameStats.Server.Model;
-using LiteDB;
-using System;
 
 namespace Kontur.GameStats.Server
 {
     public class AdvertiseMatchResult : RequestHandler<MatchParameters>
     {
-        private IRepository<Model.Server> serversTable;
-        private IRepository<Model.Match> matchesTable;
-        private IRepository<Model.PlayerStatistics> statisticsTable;
+        private readonly IRepository<Model.Server> serversTable;
+        private readonly IRepository<Model.Match> matchesTable;
+        private readonly IRepository<Model.PlayerStatistics> statisticsTable;
 
-        public AdvertiseMatchResult(IRepository<Model.Server> serversTable, IRepository<Model.Match> matchesTable, IRepository<Model.PlayerStatistics> statisticsTable)
+        private readonly ICurrentTimeGetter timeGetter;
+
+        public AdvertiseMatchResult(IRepository<Model.Server> serversTable, IRepository<Model.Match> matchesTable, IRepository<Model.PlayerStatistics> statisticsTable, ICurrentTimeGetter timeGetter)
         {
             this.serversTable = serversTable;
             this.matchesTable = matchesTable;
             this.statisticsTable = statisticsTable;
+            this.timeGetter = timeGetter;
         }
 
         public override object Process(MatchParameters parameters, dynamic data)
@@ -28,7 +29,7 @@ namespace Kontur.GameStats.Server
             }
 
             server.MatchesCount++;
-            int daysSinceServerAdvertisment = (DateTime.Now - server.AdvertisingTime).Days + 1;
+            int daysSinceServerAdvertisment = (timeGetter.GetCurrentTime() - server.AdvertisingTime).Days + 1;
             server.AverageMatchesPerDay = (float)server.MatchesCount / daysSinceServerAdvertisment;
             serversTable.Update(server);
 
@@ -40,11 +41,11 @@ namespace Kontur.GameStats.Server
             };
 
             bool firstPlayer = true;
-            float scoreboardPercent = 100;
+            float scoreboardPercent = 100f;
             foreach (PlayerScore playerScore in match.Results.Scoreboard)
             {
                 UpdatePlayerStatistics(match, playerScore, firstPlayer, scoreboardPercent);
-                scoreboardPercent -= 100 / (match.Results.Scoreboard.Count - 1);
+                scoreboardPercent -= 100f / (match.Results.Scoreboard.Count - 1);
                 firstPlayer = false;
             }
 
@@ -76,7 +77,7 @@ namespace Kontur.GameStats.Server
                     statistics.KillToDeathRatio = (float)statistics.Kills / statistics.Deaths;
                 }
 
-                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, DateTime.Now);
+                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, timeGetter.GetCurrentTime());
 
                 statisticsTable.Update(statistics);
             }
@@ -84,17 +85,17 @@ namespace Kontur.GameStats.Server
             {
                 // It's' first match of this player
                 // Create new entry in statistics collection
-                statistics = new PlayerStatistics()
+                statistics = new PlayerStatistics
                 {
                     Name = playerScore.Name,
                     Kills = playerScore.Kills,
                     Deaths = playerScore.Deaths,
-                    TotalMatchesWon = isWinner ? 1 : 0
+                    TotalMatchesWon = isWinner ? 1 : 0,
+                    FirstMatchPlayed = timeGetter.GetCurrentTime()
                 };
 
-                statistics.FirstMatchPlayed = DateTime.Now;
 
-                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, DateTime.Now);
+                statistics.MatchPlayed(match.Server, match.Results.GameMode, scoreboardPercent, timeGetter.GetCurrentTime());
 
                 statisticsTable.Insert(statistics);
             }

@@ -1,10 +1,8 @@
-﻿using LiteDB;
-
-namespace Kontur.GameStats.Server
+﻿namespace Kontur.GameStats.Server
 {
     public class GetServersMatches : RequestHandler<MatchParameters>
     {
-        private IRepository<Model.Match> matchesTable;
+        private readonly IRepository<Model.Match> matchesTable;
 
         public GetServersMatches(IRepository<Model.Match> matchesTable)
         {

@@ -1,10 +1,8 @@
-﻿using LiteDB;
-
-namespace Kontur.GameStats.Server
+﻿namespace Kontur.GameStats.Server
 {
     public class GetServerInfo : RequestHandler<ServerParameters>
     {
-        private IRepository<Model.Server> serversTable;
+        private readonly IRepository<Model.Server> serversTable;
 
         public GetServerInfo(IRepository<Model.Server> serversTable)
         {

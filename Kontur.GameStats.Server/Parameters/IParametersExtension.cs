@@ -2,7 +2,7 @@
 
 namespace Kontur.GameStats.Server
 {
-    public static class IParametersExtension
+    public static class ParametersExtension
     {
         public static void SetValues(this IParameters parameters, string[] adressParameters)
         {

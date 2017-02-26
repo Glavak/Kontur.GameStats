@@ -1,19 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using LiteDB;
 
 namespace Kontur.GameStats.Server
 {
     public class ReportBestPlayers : CachedRequestHandler<Model.BestPlayersPlayer>
     {
-        private IRepository<Model.PlayerStatistics> statisticsTable;
+        private readonly IRepository<Model.PlayerStatistics> statisticsTable;
 
-        public ReportBestPlayers(IRepository<Model.PlayerStatistics> statisticsTable)
+        public ReportBestPlayers(IRepository<Model.PlayerStatistics> statisticsTable, ICurrentTimeGetter timeGetter) : base(timeGetter)
         {
             this.statisticsTable = statisticsTable;
         }
-
-        // TODO: extract some RequestHandlerCached abstract class
 
         public override Model.BestPlayersPlayer[] Recache()
         {

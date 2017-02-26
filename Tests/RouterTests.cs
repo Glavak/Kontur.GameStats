@@ -19,8 +19,8 @@ namespace Tests
 
             router.Bind<MockHandler>(@"/some/test/path/?", "GET");
             router.Bind<MockHandler>(@"/" + 
-                RoutingRules.endpointRegexp + "/" + 
-                RoutingRules.timestampRegexp + "/?", 
+                RoutingRules.EndpointRegexp + "/" + 
+                RoutingRules.TimestampRegexp + "/?", 
                 "PUT");
         }
 

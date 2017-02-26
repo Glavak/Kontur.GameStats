@@ -1,19 +1,16 @@
-﻿using System;
-using System.Linq;
-using Fclp.Internals.Extensions;
-using Kontur.GameStats.Server.Model;
-using LiteDB;
-using Newtonsoft.Json.Linq;
+﻿using Kontur.GameStats.Server.Model;
 
 namespace Kontur.GameStats.Server
 {
     public class AdvertiseServerInfo : RequestHandler<ServerParameters>
     {
-        private IRepository<Model.Server> serversTable;
+        private readonly IRepository<Model.Server> serversTable;
+        private readonly ICurrentTimeGetter timeGetter;
 
-        public AdvertiseServerInfo(IRepository<Model.Server> serversTable)
+        public AdvertiseServerInfo(IRepository<Model.Server> serversTable, ICurrentTimeGetter timeGetter)
         {
             this.serversTable = serversTable;
+            this.timeGetter = timeGetter;
         }
 
         public override object Process(ServerParameters parameters, dynamic data)
@@ -24,7 +21,7 @@ namespace Kontur.GameStats.Server
             {
                 // Update already existing server
                 server.Info = data.ToObject<ServerInfo>();
-                server.AdvertisingTime = DateTime.Now; // TODO: should we count it lifetime from last or first advertising?
+                server.AdvertisingTime = timeGetter.GetCurrentTime(); // TODO: should we count it lifetime from last or first advertising?
 
                 serversTable.Update(server);
             }
@@ -35,7 +32,7 @@ namespace Kontur.GameStats.Server
                 {
                     Endpoint = parameters.Endpoint,
                     Info = data.ToObject<ServerInfo>(),
-                    AdvertisingTime = DateTime.Now
+                    AdvertisingTime = timeGetter.GetCurrentTime()
                 };
 
                 serversTable.Insert(server);

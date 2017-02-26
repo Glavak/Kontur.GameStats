@@ -71,6 +71,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CurrentTime\ICurrentTimeGetter.cs" />
+    <Compile Include="CurrentTime\SystemTimeGetter.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="Data\LiteDBRepository.cs" />
     <Compile Include="Logging\ILogger.cs" />

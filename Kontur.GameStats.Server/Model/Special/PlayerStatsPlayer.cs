@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server.Model
 {
@@ -46,7 +43,7 @@ namespace Kontur.GameStats.Server.Model
             this.KillToDeathRatio = (float)prototype.Kills / prototype.Deaths;
         }
 
-        private string GetMaxKey(Dictionary<string, int> dictionary)
+        private static string GetMaxKey(Dictionary<string, int> dictionary)
         {
             string maximumKey = null;
             int maximumValue = int.MinValue;

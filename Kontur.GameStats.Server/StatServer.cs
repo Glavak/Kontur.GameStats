@@ -4,8 +4,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using LiteDB;
-using Newtonsoft.Json;
 using Microsoft.Practices.Unity;
+using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server
 {
@@ -15,7 +15,6 @@ namespace Kontur.GameStats.Server
         private readonly Router router;
         private readonly LiteDatabase database;
         private readonly LoggerToFile logger;
-        private readonly UnityContainer unityContainer;
 
         private Thread listenerThread;
         private bool disposed;
@@ -25,7 +24,7 @@ namespace Kontur.GameStats.Server
         {
             listener = new HttpListener();
 
-            unityContainer = new UnityContainer();
+            var unityContainer = new UnityContainer();
 
             database = new LiteDatabase("MyDataBase.db");
             unityContainer.RegisterInstance(database);
@@ -37,6 +36,10 @@ namespace Kontur.GameStats.Server
             unityContainer.RegisterInstance(logger);
             unityContainer.RegisterType
                 <ILogger, LoggerToFile>
+                (new ContainerControlledLifetimeManager());
+
+            unityContainer.RegisterType
+                <ICurrentTimeGetter, SystemTimeGetter>
                 (new ContainerControlledLifetimeManager());
 
             unityContainer.RegisterType<IRepository<Model.Server>, LiteDBRepository<Model.Server>>(new ContainerControlledLifetimeManager());

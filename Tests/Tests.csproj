@@ -72,6 +72,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="MockServerRepository.cs" />
+    <Compile Include="MockTimeGetter.cs" />
     <Compile Include="ParameterIntegerTests.cs" />
     <Compile Include="ParameterStringTests.cs" />
     <Compile Include="ParameterTimetampTests.cs" />

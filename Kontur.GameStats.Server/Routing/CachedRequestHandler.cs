@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server
 {
@@ -11,13 +8,20 @@ namespace Kontur.GameStats.Server
         private TElements[] elementsCache;
         private DateTime lasTimeRecached;
 
-        public override sealed object Process(CountParameters parameters, object data)
+        private readonly ICurrentTimeGetter timeGetter;
+
+        protected CachedRequestHandler(ICurrentTimeGetter timeGetter)
         {
-            if (elementsCache == null || (DateTime.Now - lasTimeRecached).TotalMinutes > 1)
+            this.timeGetter = timeGetter;
+        }
+
+        public sealed override object Process(CountParameters parameters, object data)
+        {
+            if (elementsCache == null || (timeGetter.GetCurrentTime() - lasTimeRecached).TotalMinutes > 1)
             {
                 elementsCache = Recache();
 
-                lasTimeRecached = DateTime.Now;
+                lasTimeRecached = timeGetter.GetCurrentTime();
             }
 
             return elementsCache.Take(parameters.Count);
