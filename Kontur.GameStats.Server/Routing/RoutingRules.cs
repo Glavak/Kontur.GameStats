@@ -4,7 +4,7 @@
     {
         public const string EndpointRegexp = @"(([a-zA-Z]+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})-(\d+))";
         public const string TimestampRegexp = @"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)";
-        public const string PlayerNameRegexp = @"([A-Za-z0-9\+%]+)";
+        public const string PlayerNameRegexp = @"([A-Za-z0-9_%\+]+)";
         public const string CountRegexp = @"(\d+)";
 
         public static void BindRules(Router router)

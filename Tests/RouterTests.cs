@@ -19,6 +19,9 @@ namespace Tests
                                      RoutingRules.EndpointRegexp + "/" +
                                      RoutingRules.TimestampRegexp + "/?",
                 "PUT");
+            router.Bind<MockHandler>(@"/" +
+                                     RoutingRules.PlayerNameRegexp + "/?",
+                "POST");
         }
 
         [TestMethod]
@@ -85,7 +88,17 @@ namespace Tests
             Assert.AreEqual("Datadatadata", MockHandler.LastDataCalled);
         }
 
-        // TODO: test parameter passing to RequestHandler
+        [TestMethod]
+        public void PlayerUrlencodedName()
+        {
+            MockHandler.CountCalled = 0;
+            MockHandler.LastDataCalled = null;
+
+            router.RouteRequest("/players/Tricky%20%20Name+0f_A_PLAY3R", "Datadatadata", "POST");
+
+            Assert.AreEqual(1, MockHandler.CountCalled);
+            Assert.AreEqual("Datadatadata", MockHandler.LastDataCalled);
+        }
     }
 
     internal class MockHandler : RequestHandler<EmptyParameters>

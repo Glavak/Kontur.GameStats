@@ -19,7 +19,7 @@ namespace Kontur.GameStats.Server.Model
 
         public int MaximumMathcesPerDay { get; set; }
 
-        public int AverageMathcesPerDay { get; set; }
+        public float AverageMatchesPerDay { get; set; }
 
         public DateTime LastMatchPlayed { get; set; }
 
@@ -34,9 +34,11 @@ namespace Kontur.GameStats.Server.Model
             FavoriteGameMode = GetMaxKey(prototype.GameModesPlayedCount);
             AverageScoreboardPercent = prototype.AverageScoreboardPercent;
             MaximumMathcesPerDay = prototype.MaximumMathcesPerDay;
-            int daysPlayed = (prototype.LastMatchPlayed - prototype.FirstMatchPlayed).Days + 1;
-            AverageMathcesPerDay = prototype.TotalMatchesPlayed / daysPlayed;
             LastMatchPlayed = prototype.LastMatchPlayed;
+
+            // Also count today's matches, that not counted in prototype.AverageMatchesPerDay
+            AverageMatchesPerDay = MyMath.UpdateAverage(
+                prototype.AverageMatchesPerDay, prototype.DaysActive, prototype.TodayMathcesPlayed);
 
             // Divide k/d, not use field from prototype, as it may contain 0
             // to exclude player from best players top

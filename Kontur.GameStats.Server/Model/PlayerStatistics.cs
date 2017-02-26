@@ -37,6 +37,10 @@ namespace Kontur.GameStats.Server.Model
 
         public int MaximumMathcesPerDay { get; set; }
 
+        public float AverageMatchesPerDay { get; set; }
+
+        public int DaysActive { get; set; }
+
         public PlayerStatistics()
         {
             ServerMatchesCount = new Dictionary<string, int>();
@@ -53,7 +57,10 @@ namespace Kontur.GameStats.Server.Model
 
             if (LastMatchPlayed.Day != time.Day)
             {
-                // It's a new day, reset today matches
+                // It's a new day, update average and reset today matches
+                AverageMatchesPerDay = MyMath.UpdateAverage(AverageMatchesPerDay, DaysActive, TodayMathcesPlayed);
+                DaysActive++;
+
                 TodayMathcesPlayed = 1;
             }
             else

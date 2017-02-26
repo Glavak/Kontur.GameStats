@@ -22,9 +22,12 @@ namespace Kontur.GameStats.Server.Model
         {
             TotalMatchesPlayed = prototype.TotalMatchesPlayed;
             MaximumMathcesPerDay = prototype.MaximumMathcesPerDay;
-            AverageMatchesPerDay = prototype.AverageMatchesPerDay;
             MaximumPopulation = prototype.MaximumPopulation;
             AveragePopulation = prototype.AveragePopulation;
+
+            // Also count today's matches, that not counted in prototype.AverageMatchesPerDay
+            AverageMatchesPerDay = MyMath.UpdateAverage(
+                prototype.AverageMatchesPerDay, prototype.DaysActive, prototype.TodayMathcesPlayed);
 
             // Sort descending by values, and take first 5 for gameMode and map tops:
             var gameModesList = prototype.ServerGameModesCount.ToList();

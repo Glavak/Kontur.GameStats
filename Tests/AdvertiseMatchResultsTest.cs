@@ -40,7 +40,7 @@ namespace Tests
 
             statisticsTable = new MockRepository<PlayerStatistics>();
 
-            statisticsTable.Elements.Add(new PlayerStatistics {Name = "Existing"});
+            statisticsTable.Elements.Add(new PlayerStatistics { Name = "Existing" });
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace Tests
             var timeGetter = new MockTimeGetter(new DateTime(51634312));
             var handler = new AdvertiseMatchResult(serversTable, matchesTable, statisticsTable, timeGetter);
 
-            handler.Process(new MatchParameters {Endpoint = "notExistingEndpoint-1", Timestamp = timeGetter.Time},
+            handler.Process(new MatchParameters { Endpoint = "notExistingEndpoint-1", Timestamp = timeGetter.Time },
                 new object());
         }
 
@@ -70,32 +70,92 @@ namespace Tests
                     Scoreboard = new List<PlayerScore>
                     {
                         new PlayerScore {Name = "Existing"},
-                        new PlayerScore {Name = "Not Existing"}
+                        new PlayerScore {Name = "Not+Existing"}
                     },
                     TimeElapsed = 12.2f,
                     TimeLimit = 10
                 }
             };
 
-            handler.Process(new MatchParameters {Endpoint = "hostname-6556", Timestamp = timeGetter.Time}, data);
+            handler.Process(new MatchParameters { Endpoint = "hostname-6556", Timestamp = timeGetter.Time }, data);
 
             // Assert inserted match:
             Assert.AreEqual(1, matchesTable.InsertCalledTimes);
-            Assert.AreEqual("hostname-6556", matchesTable.LastInsertElement.Server);
-            Assert.AreEqual(timeGetter.Time, matchesTable.LastInsertElement.Timestamp);
-            Assert.AreEqual(data.ReturnValue, matchesTable.LastInsertElement.Results);
+            Assert.AreEqual("hostname-6556", matchesTable.InsertElements[0].Server);
+            Assert.AreEqual(timeGetter.Time, matchesTable.InsertElements[0].Timestamp);
+            Assert.AreEqual(data.ReturnValue, matchesTable.InsertElements[0].Results);
 
             // Assert updated server:
             Assert.AreEqual(1, serversTable.UpdateCalledTimes);
-            Assert.AreEqual("hostname-6556", serversTable.LastUpdateElement.Endpoint);
-            Assert.AreEqual(1, serversTable.LastUpdateElement.TotalMatchesPlayed);
-            Assert.AreEqual(2, serversTable.LastUpdateElement.AveragePopulation);
+            Assert.AreEqual("hostname-6556", serversTable.UpdateElements[0].Endpoint);
+            Assert.AreEqual(1, serversTable.UpdateElements[0].TotalMatchesPlayed);
+            Assert.AreEqual(2, serversTable.UpdateElements[0].AveragePopulation);
 
             // Assert updated/inserted statistics:
             Assert.AreEqual(1, statisticsTable.UpdateCalledTimes);
             Assert.AreEqual(1, statisticsTable.InsertCalledTimes);
-            Assert.AreEqual("Not Existing", statisticsTable.LastInsertElement.Name);
-            Assert.AreEqual("Existing", statisticsTable.LastUpdateElement.Name);
+            Assert.AreEqual("Not+Existing", statisticsTable.InsertElements[0].Name);
+            Assert.AreEqual("Existing", statisticsTable.UpdateElements[0].Name);
+        }
+
+        [TestMethod]
+        public void ScoreboardPercentCalculation()
+        {
+            var handler = new AdvertiseMatchResult(serversTable, matchesTable, statisticsTable, new MockTimeGetter(new DateTime(51634312)));
+
+            var data = new MockMatchData
+            {
+                ReturnValue = new MatchResults
+                {
+                    GameMode = "DM",
+                    Map = "dedust",
+                    Scoreboard = new List<PlayerScore>
+                    {
+                        new PlayerScore {Name = "gold"},
+                        new PlayerScore {Name = "silver"},
+                        new PlayerScore {Name = "bronze"},
+                        new PlayerScore {Name = "nothing"},
+                        new PlayerScore {Name = "nothingAtAll"}
+                    }
+                }
+            };
+
+
+            handler.Process(new MatchParameters { Endpoint = "hostname-6556" }, data);
+
+            Assert.AreEqual(5, statisticsTable.InsertCalledTimes);
+
+            Assert.AreEqual(0, statisticsTable.InsertElements[4].AverageScoreboardPercent);
+            Assert.AreEqual(25, statisticsTable.InsertElements[3].AverageScoreboardPercent);
+            Assert.AreEqual(50, statisticsTable.InsertElements[2].AverageScoreboardPercent);
+            Assert.AreEqual(75, statisticsTable.InsertElements[1].AverageScoreboardPercent);
+            Assert.AreEqual(100, statisticsTable.InsertElements[0].AverageScoreboardPercent);
+        }
+
+        [TestMethod]
+        public void ScoreboardPercentOnePlayer()
+        {
+            var handler = new AdvertiseMatchResult(serversTable, matchesTable, statisticsTable, new MockTimeGetter(new DateTime(51634312)));
+
+            var data = new MockMatchData
+            {
+                ReturnValue = new MatchResults
+                {
+                    GameMode = "DM",
+                    Map = "dedust",
+                    Scoreboard = new List<PlayerScore>
+                    {
+                        new PlayerScore {Name = "gold"}
+                    }
+                }
+            };
+
+
+            handler.Process(new MatchParameters { Endpoint = "hostname-6556" }, data);
+
+            Assert.AreEqual(1, statisticsTable.InsertCalledTimes);
+
+            Assert.AreEqual(100, statisticsTable.InsertElements[0].AverageScoreboardPercent);
         }
     }
 

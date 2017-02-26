@@ -11,8 +11,8 @@ namespace Tests
     {
         public List<TElement> Elements = new List<TElement>();
         public int InsertCalledTimes;
-        public TElement LastInsertElement;
-        public TElement LastUpdateElement;
+        public List<TElement> InsertElements = new List<TElement>();
+        public List<TElement> UpdateElements = new List<TElement>();
         public int UpdateCalledTimes;
 
         public IEnumerable<TElement> GetAll()
@@ -41,7 +41,7 @@ namespace Tests
         public bool Update(TElement entity)
         {
             UpdateCalledTimes++;
-            LastUpdateElement = entity;
+            UpdateElements.Add(entity);
 
             return true;
         }
@@ -49,12 +49,16 @@ namespace Tests
         public int Insert(TElement entity)
         {
             InsertCalledTimes++;
-            LastInsertElement = entity;
+            InsertElements.Add(entity);
 
             return 1;
         }
     }
 
+    /// <summary>
+    /// Compare elements by IComparable property with given name, using reflection
+    /// </summary>
+    /// <typeparam name="TElement"></typeparam>
     public class ElementComparer<TElement> : IComparer<TElement>
     {
         private readonly int order;

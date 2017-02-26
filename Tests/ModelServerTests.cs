@@ -34,6 +34,8 @@ namespace Tests
 
             Assert.AreEqual(3, serverStatsServer.Top5Maps.Length);
             Assert.AreEqual("dedust", serverStatsServer.Top5Maps[0]);
+
+            Assert.AreEqual(2, serverStatsServer.AverageMatchesPerDay);
         }
     }
 }

@@ -26,6 +26,7 @@ namespace Tests
 
             Assert.AreEqual("serv-1", playerStatsPlayer.FavoriteServer);
             Assert.AreEqual("TDM", playerStatsPlayer.FavoriteGameMode);
+            Assert.AreEqual(1.5, playerStatsPlayer.AverageMatchesPerDay);
         }
     }
 }
