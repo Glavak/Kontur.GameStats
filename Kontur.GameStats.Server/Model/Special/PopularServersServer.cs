@@ -12,7 +12,9 @@
         {
             Endpoint = prototype.Endpoint;
             Name = prototype.Info.Name;
-            AverageMatchesPerDay = prototype.AverageMatchesPerDay;
+
+            // Also count today's matches, that not counted in prototype.AverageMatchesPerDay
+            AverageMatchesPerDay = prototype.GetActualAverageMatchesPerDay();
         }
     }
 }

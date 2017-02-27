@@ -50,6 +50,11 @@ namespace Kontur.GameStats.Server
                 return handler.Handle(parameters, data);
             }
 
+            unityContainer.Resolve<ILogger>().Log(MessageType.Info,
+                "User attempted to open not existing page, url: \"" + 
+                address + 
+                "\". 404 returned.");
+
             throw new PageNotFoundException("");
         }
     }

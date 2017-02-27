@@ -26,7 +26,7 @@ namespace Tests
             {
                 return Elements.First(predicate.Compile());
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 // No such element
                 return default(TElement);

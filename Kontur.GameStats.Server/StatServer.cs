@@ -129,7 +129,7 @@ namespace Kontur.GameStats.Server
             }
         }
 
-        private async Task HandleContextAsync(HttpListenerContext listenerContext)
+        private void HandleContextAsync(HttpListenerContext listenerContext)
         {
             string resultText = "";
 

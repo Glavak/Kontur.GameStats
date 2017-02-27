@@ -37,7 +37,18 @@ namespace Kontur.GameStats.Server.Model
 
         public int MaximumMathcesPerDay { get; set; }
 
+        /// <summary>
+        /// Average matches per day, todays matches not included in calculation
+        /// </summary>
         public float AverageMatchesPerDay { get; set; }
+
+        /// <summary>
+        /// </summary>
+        /// <returns>AverageMatchesPerDay, including today's data</returns>
+        public float GetActualAverageMatchesPerDay()
+        {
+            return MyMath.UpdateAverage(AverageMatchesPerDay, DaysActive - 1, TodayMathcesPlayed);
+        }
 
         public int DaysActive { get; set; }
 

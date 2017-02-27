@@ -12,6 +12,7 @@ namespace Tests
         public RouterTests()
         {
             var container = new UnityContainer();
+            container.RegisterType<ILogger, DummyLogger>();
             router = new Router(container);
 
             router.Bind<MockHandler>(@"/some/test/path/?", "GET");
@@ -112,6 +113,14 @@ namespace Tests
             LastDataCalled = data;
 
             return "Test returned object";
+        }
+    }
+
+    internal class DummyLogger : ILogger
+    {
+        public void Log(MessageType messageType, string message)
+        {
+            
         }
     }
 }

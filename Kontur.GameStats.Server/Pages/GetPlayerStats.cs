@@ -1,4 +1,6 @@
-﻿namespace Kontur.GameStats.Server
+﻿using System.Threading;
+
+namespace Kontur.GameStats.Server
 {
     public class GetPlayerStats : RequestHandler<PlayerNameParameters>
     {
