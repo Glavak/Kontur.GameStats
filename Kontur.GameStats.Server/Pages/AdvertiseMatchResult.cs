@@ -59,8 +59,7 @@ namespace Kontur.GameStats.Server
 
         private void UpdatePlayerStatistics(Match match, PlayerScore playerScore, bool isWinner, float scoreboardPercent, DateTime matchTime)
         {
-            playerScore.Name = playerScore.Name.ToLower();
-            PlayerStatistics statistics = statisticsTable.GetOne(x => x.Name == playerScore.Name);
+            PlayerStatistics statistics = statisticsTable.GetOne(x => x.LowercaseName == playerScore.Name.ToLower());
 
             if (statistics != null)
             {
@@ -86,7 +85,7 @@ namespace Kontur.GameStats.Server
                 // Create new entry in statistics collection
                 statistics = new PlayerStatistics
                 {
-                    Name = playerScore.Name,
+                    DisplayName = playerScore.Name,
                     Kills = playerScore.Kills,
                     Deaths = playerScore.Deaths,
                     TotalMatchesWon = isWinner ? 1 : 0,

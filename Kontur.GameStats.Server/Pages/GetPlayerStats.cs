@@ -13,7 +13,7 @@ namespace Kontur.GameStats.Server
 
         public override object Process(PlayerNameParameters parameters, object data)
         {
-            var playerStatistics = statisticsTable.GetOne(x => x.Name == parameters.Name);
+            var playerStatistics = statisticsTable.GetOne(x => x.LowercaseName == parameters.Name);
 
             if (playerStatistics == null)
             {

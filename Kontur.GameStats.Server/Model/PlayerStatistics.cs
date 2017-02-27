@@ -9,7 +9,26 @@ namespace Kontur.GameStats.Server.Model
         // Id is required for db to work properly
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        /// <summary>
+        /// Lowercased player name, for case-insensitive search
+        /// </summary>
+        [BsonIndex]
+        public string LowercaseName { get; private set; }
+
+        /// <summary>
+        /// Originally advertised players name
+        /// </summary>
+        public string DisplayName
+        {
+            get { return displayName; }
+            set
+            {
+                displayName = value;
+                LowercaseName = value.ToLower();
+            }
+        }
+
+        private string displayName;
 
         public int TotalMatchesPlayed { get; set; }
 

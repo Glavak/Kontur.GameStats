@@ -8,7 +8,7 @@
 
         public BestPlayersPlayer(PlayerStatistics prototype)
         {
-            Name = prototype.Name;
+            Name = prototype.DisplayName;
             KillToDeathRatio = prototype.KillToDeathRatio;
         }
     }
