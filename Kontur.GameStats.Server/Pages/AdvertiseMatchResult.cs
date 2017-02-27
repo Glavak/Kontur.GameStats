@@ -59,6 +59,7 @@ namespace Kontur.GameStats.Server
 
         private void UpdatePlayerStatistics(Match match, PlayerScore playerScore, bool isWinner, float scoreboardPercent, DateTime matchTime)
         {
+            playerScore.Name = playerScore.Name.ToLower();
             PlayerStatistics statistics = statisticsTable.GetOne(x => x.Name == playerScore.Name);
 
             if (statistics != null)

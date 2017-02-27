@@ -38,7 +38,7 @@ namespace Kontur.GameStats.Server.Model
 
             // Also count today's matches, that not counted in prototype.AverageMatchesPerDay
             AverageMatchesPerDay = MyMath.UpdateAverage(
-                prototype.AverageMatchesPerDay, prototype.DaysActive, prototype.TodayMathcesPlayed);
+                prototype.AverageMatchesPerDay, prototype.DaysActive-1, prototype.TodayMathcesPlayed);
 
             // Divide k/d, not use field from prototype, as it may contain 0
             // to exclude player from best players top

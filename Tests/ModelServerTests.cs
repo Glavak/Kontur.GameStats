@@ -11,7 +11,7 @@ namespace Tests
         public void ServerTest()
         {
             var server = new Server();
-            var someDate = new DateTime(1233152);
+            var someDate = new DateTime(92156374161856352);
 
             server.MatchPlayed("DM", "dedust", 4, someDate);
             someDate += new TimeSpan(2, 0, 0, 0);
@@ -24,8 +24,7 @@ namespace Tests
             Assert.AreEqual(4, server.TotalMatchesPlayed);
             Assert.AreEqual(3, server.MaximumMathcesPerDay);
             Assert.AreEqual(3, server.TodayMathcesPlayed);
-            // Should be 1, as server have been active for only 1 full day (with 1 match)
-            Assert.AreEqual(1, server.DaysActive);
+            Assert.AreEqual(2, server.DaysActive);
 
             var serverStatsServer = new ServerStatsServer(server);
 

@@ -21,7 +21,6 @@ namespace Kontur.GameStats.Server
             {
                 // Update already existing server
                 server.Info = data.ToObject<ServerInfo>();
-                server.AdvertisingTime = timeGetter.GetCurrentTime(); // TODO: should we count it lifetime from last or first advertising?
 
                 serversTable.Update(server);
             }
@@ -32,7 +31,6 @@ namespace Kontur.GameStats.Server
                 {
                     Endpoint = parameters.Endpoint,
                     Info = data.ToObject<ServerInfo>(),
-                    AdvertisingTime = timeGetter.GetCurrentTime()
                 };
 
                 serversTable.Insert(server);

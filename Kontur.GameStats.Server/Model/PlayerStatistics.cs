@@ -52,13 +52,13 @@ namespace Kontur.GameStats.Server.Model
             ServerMatchesCount.IncrementValue(server);
             GameModesPlayedCount.IncrementValue(gameMode);
 
-            AverageScoreboardPercent = MyMath.UpdateAverage(AverageScoreboardPercent, TodayMathcesPlayed, scoreboardPercent);
+            AverageScoreboardPercent = MyMath.UpdateAverage(AverageScoreboardPercent, TotalMatchesPlayed, scoreboardPercent);
             TotalMatchesPlayed++;
 
-            if (LastMatchPlayed.Day != time.Day)
+            if (LastMatchPlayed.Day < time.Day)
             {
                 // It's a new day, update average and reset today matches
-                AverageMatchesPerDay = MyMath.UpdateAverage(AverageMatchesPerDay, DaysActive, TodayMathcesPlayed);
+                AverageMatchesPerDay = DaysActive == 0 ? 0 : MyMath.UpdateAverage(AverageMatchesPerDay, DaysActive-1, TodayMathcesPlayed);
                 DaysActive++;
 
                 TodayMathcesPlayed = 1;
@@ -74,7 +74,6 @@ namespace Kontur.GameStats.Server.Model
             }
 
             LastMatchPlayed = time;
-
         }
     }
 }

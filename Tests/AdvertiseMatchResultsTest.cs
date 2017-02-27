@@ -40,7 +40,7 @@ namespace Tests
 
             statisticsTable = new MockRepository<PlayerStatistics>();
 
-            statisticsTable.Elements.Add(new PlayerStatistics { Name = "Existing" });
+            statisticsTable.Elements.Add(new PlayerStatistics { Name = "existing" });
         }
 
         [TestMethod]
@@ -94,8 +94,8 @@ namespace Tests
             // Assert updated/inserted statistics:
             Assert.AreEqual(1, statisticsTable.UpdateCalledTimes);
             Assert.AreEqual(1, statisticsTable.InsertCalledTimes);
-            Assert.AreEqual("Not+Existing", statisticsTable.InsertElements[0].Name);
-            Assert.AreEqual("Existing", statisticsTable.UpdateElements[0].Name);
+            Assert.AreEqual("not+existing", statisticsTable.InsertElements[0].Name);
+            Assert.AreEqual("existing", statisticsTable.UpdateElements[0].Name);
         }
 
         [TestMethod]

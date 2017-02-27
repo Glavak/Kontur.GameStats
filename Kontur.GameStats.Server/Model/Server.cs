@@ -14,8 +14,6 @@ namespace Kontur.GameStats.Server.Model
 
         public ServerInfo Info { get; set; }
 
-        public DateTime AdvertisingTime { get; set; }
-
         public int TotalMatchesPlayed { get; set; }
 
         public int TodayMathcesPlayed { get; set; }
@@ -56,10 +54,10 @@ namespace Kontur.GameStats.Server.Model
 
             TotalMatchesPlayed++;
 
-            if (LastMatchPlayed.Day != time.Day)
+            if (LastMatchPlayed.Day < time.Day)
             {
                 // It's a new day, update average and reset today matches
-                AverageMatchesPerDay = MyMath.UpdateAverage(AverageMatchesPerDay, DaysActive, TodayMathcesPlayed);
+                AverageMatchesPerDay = DaysActive == 0 ? 0 : MyMath.UpdateAverage(AverageMatchesPerDay, DaysActive-1, TodayMathcesPlayed);
                 DaysActive++;
 
                 TodayMathcesPlayed = 1;

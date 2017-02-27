@@ -11,7 +11,7 @@ namespace Tests
         public void PlayerStatisticsTest()
         {
             var playerStatistics = new PlayerStatistics();
-            var someDate = new DateTime(1233152);
+            var someDate = new DateTime(921563331156352);
 
             playerStatistics.MatchPlayed("serv-1", "DM", 10f, someDate);
             playerStatistics.MatchPlayed("serv-2", "TDM", 30f, someDate);
@@ -21,6 +21,7 @@ namespace Tests
             Assert.AreEqual(1, playerStatistics.TodayMathcesPlayed);
             Assert.AreEqual(2, playerStatistics.MaximumMathcesPerDay);
             Assert.AreEqual(30, playerStatistics.AverageScoreboardPercent);
+            Assert.AreEqual(2, playerStatistics.DaysActive);
 
             var playerStatsPlayer = new PlayerStatsPlayer(playerStatistics);
 
